@@ -3,7 +3,11 @@ import { ref, onMounted } from 'vue'
 import TheNavbar from '@/components/TheNavbar.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import axiosInstance from '@/axiosconfig/axiosInstance'
+import bgImage from '@/assets/images/staycation/EliteBg.jpg';
+import geometricImage from '@/assets/images/geometric.png';
 
+const bgImageUrl = bgImage;
+const geometricUrlImage = geometricImage;
 const hotels = ref([])
 const filteredHotels = ref([])
 const wishlist = ref([])
@@ -69,14 +73,6 @@ const scrollRight = () => {
     scrollContainer.value.scrollBy({ left: 300, behavior: 'smooth' })
   }
 }
-
-const videoRef = ref(null)
-
-onMounted(() => {
-  if (videoRef.value) {
-    videoRef.value.playbackRate = 0.4
-  }
-})
 </script>
 
 <template>
@@ -84,28 +80,29 @@ onMounted(() => {
 
   <!-- Hero Section with Background Video -->
   <div class="relative h-96">
-    <video ref="videoRef" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
-      <source src="@/assets/images/staycation/video/stay1.mp4" type="video/mp4" />
-      <img src="@/assets/images/staycation/fallback.jpg" alt="Fallback background image"
-        class="absolute inset-0 w-full h-full object-cover" />
-    </video>
-    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    <div class="relative h-full flex flex-col justify-center items-start text-white px-8 lg:px-16 space-y-6">
+    <!-- Background Image with a dark overlay -->
+    <div class="absolute inset-0">
+      <img :src="bgImageUrl" alt="Fallback background image" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-black opacity-60"></div> <!-- Semi-transparent dark overlay -->
+    </div>
+
+    <!-- Content Overlaid on the Image -->
+    <div class="relative z-10 h-full flex flex-col justify-center items-start text-white px-8 lg:px-16 space-y-6">
       <h1 class="text-4xl md:text-5xl font-bold">Welcome to Mite_Explorers</h1>
-      <P class="text-2xl md:text-xl font-bold max-w-xl">Move. Inspire . Travel. Explore</P>
+      <p class="text-2xl md:text-xl font-bold max-w-xl text-blue-200">Move · Inspire · Travel · Explore</p>
       <p class="text-xl md:text-xl font-semi max-w-xl">
-        Discover handpicked destinations, luxurious stays, and seamless travel experiences designed
-        to make every journey unforgettable.
+        Explore breathtaking destinations, indulge in luxurious stays, and enjoy effortless travel experiences—crafted
+        to make every journey extraordinary.
       </p>
       <div class="space-y-4">
         <div class="flex space-x-4">
           <router-link to="/services"
-            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-600 hover:text-white">
+            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
             Explore Stays
           </router-link>
           <router-link to="/comingsoon"
-            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-indigo-600 hover:text-white">
-            Book Flights
+            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
+            View More
           </router-link>
         </div>
       </div>
@@ -113,8 +110,22 @@ onMounted(() => {
   </div>
 
   <!-- Search Bar Section -->
-  <div class="py-8 bg-gray-50 px-4 md:px-16">
-    <div class="max-w-3xl mx-auto flex items-center space-x-4">
+  <div class="relative py-8 bg-gray-50 px-4 md:px-16">
+    <!-- Geometric Overlay -->
+    <div class="absolute top-0 right-0 w-1/2 h-full hidden md:block">
+      <img :src="geometricUrlImage" alt="Elite Explorers" class="w-full h-full object-cover opacity-50" />
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 text-center mb-6 text-black">
+      <h1 class="text-2xl md:text-4xl mb-2 font-bold">
+        Explore Destinations, Activities and Experiences
+      </h1>
+      <p>Your travel agency of choice</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative z-10 max-w-3xl mx-auto flex items-center space-x-4">
       <input v-model="searchQuery" @input="filterHotels" type="text" placeholder="Search for hotels, destinations..."
         class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
       <button @click="filterHotels"
@@ -123,11 +134,12 @@ onMounted(() => {
         <span>Search</span>
       </button>
     </div>
-  </div>
 
-  <!-- Message for no results -->
-  <div v-if="filteredHotels.length === 0" class="text-center text-lg font-semibold text-red-600 mt-4">
-    No results found for "{{ searchQuery }}".
+
+    <!-- Message for no results -->
+    <div v-if="filteredHotels.length === 0" class="text-center text-lg font-semibold text-red-600 mt-4">
+      No results found for "{{ searchQuery }}".
+    </div>
   </div>
 
   <!-- Property Cards Section -->

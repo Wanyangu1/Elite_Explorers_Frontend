@@ -23,7 +23,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="text-white bg-blue-600">
+  <div class="text-white bg-blue-500">
     <!-- Top Navigation -->
     <div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center relative">
       <a href="/" class="text-2xl font-bold">
@@ -74,8 +74,8 @@ onMounted(() => {
         <i class="fas fa-bars"></i>
       </button>
 
-      <div v-if="isTopRightMenuOpen" class="absolute top-0 right-0 mt-12 w-48 p-4 rounded-lg shadow-lg z-50"
-        style="background-color: rgb(181, 101, 30)">
+      <div v-if="isTopRightMenuOpen"
+        class="absolute top-0 right-0 mt-12 w-48 p-4 rounded-lg shadow-lg z-50 bg-blue-700">
         <!-- Currency Converter -->
         <router-link to="https://www.oanda.com/currency-converter/en/?from=USD&to=EUR&amount=1" target="_blank"
           class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
@@ -153,8 +153,7 @@ onMounted(() => {
         <button class="text-white text-xl" @click="isBottomMenuOpen = !isBottomMenuOpen">
           <i class="fas fa-bars"></i>
         </button>
-        <div v-if="isBottomMenuOpen" class="absolute top-0 left-0 mt-24 w-48 p-4 rounded-lg shadow-lg z-50"
-          style="background-color: rgb(181, 101, 30)">
+        <div v-if="isBottomMenuOpen" class="absolute top-0 left-0 mt-24 w-48 p-4 rounded-lg shadow-lg z-50 bg-blue-800">
           <router-link to="/services"
             class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
             <i class="fas fa-bed mr-2"></i> Stays

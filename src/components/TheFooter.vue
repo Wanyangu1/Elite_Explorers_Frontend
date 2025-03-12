@@ -1,5 +1,5 @@
 <template>
-  <footer class="text-white py-8 bg-blue-600">
+  <footer class="text-white py-8 bg-blue-500">
     <div class="mb-12 max-w-screen-lg mx-auto px-6 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4 lg:gap-10">
       <!-- Social Media Section -->
       <div>
