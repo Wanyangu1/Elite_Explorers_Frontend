@@ -10,17 +10,9 @@ const bgImageUrl = bgImage;
 const geometricUrlImage = geometricImage;
 const hotels = ref([])
 const filteredHotels = ref([])
-const wishlist = ref([])
 const trendingDestinations = ref([])
 const searchQuery = ref('')
-
-const toggleWishlist = (hotelId) => {
-  if (wishlist.value.includes(hotelId)) {
-    wishlist.value = wishlist.value.filter((id) => id !== hotelId)
-  } else {
-    wishlist.value.push(hotelId)
-  }
-}
+const services = ref([])
 
 const fetchHotels = async () => {
   try {
@@ -59,6 +51,34 @@ const filterHotels = () => {
 // Fetch the hotels when the component is mounted
 onMounted(fetchHotels)
 
+const fetchServices = async () => {
+  try {
+    // Fetch services
+    const response = await axiosInstance.get('/api/services/services/')
+    const servicesData = response.data
+
+    // Fetch images
+    const imagesResponse = await axiosInstance.get('/api/services/images/service-images/')
+    const imagesData = imagesResponse.data
+
+    // Associate images with services
+    services.value = servicesData.map(service => {
+      const serviceImages = imagesData.filter(image => image.service === service.id)
+      return {
+        id: service.id,
+        title: service.title,
+        provider: service.provider,
+        price: service.price,
+        available: service.available,
+        image: serviceImages.length > 0 ? serviceImages[0].image_url : null, // Get first image
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching services or images:', error)
+  }
+}
+
+onMounted(fetchServices)
 // Scroll functions for the carousel
 const scrollContainer = ref(null)
 
@@ -181,34 +201,41 @@ const scrollRight = () => {
     </div>
   </section>
 
-  <!-- Property Listing Section -->
+  <!-- Featured Properties Section -->
   <section class="py-16 bg-gray-200">
     <div class="max-w-6xl mx-auto px-2">
       <h2 class="text-2xl font-bold mb-4">Our Featured Properties</h2>
       <p class="text-md mb-6">Explore the most luxurious properties and destinations we offer.</p>
-      <div v-if="filteredHotels.length > 0">
+
+      <div v-if="services.length > 0">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div v-for="hotel in filteredHotels" :key="hotel.id" class="relative bg-white shadow-md rounded-lg p-2">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors text-xl"
-              @click="toggleWishlist(hotel.id)">
-              <i :class="[
-                wishlist.includes(hotel.id) ? 'fas fa-heart' : 'far fa-heart',
-                'text-red-600',
-              ]"></i>
-            </button>
-            <div v-if="hotel.image" class="mb-4">
-              <img :src="hotel.image" alt="Hotel Image" class="w-full h-56 object-cover rounded-md" />
+          <router-link v-for="service in services" :key="service.id" :to="`/services/${service.id}`"
+            class="block bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300 relative">
+            <div v-if="service.image" class="mb-4">
+              <img :src="service.image" alt="Service Image" class="w-full h-56 object-contain rounded-md" />
             </div>
-            <h2 class="text-xl font-semibold">{{ hotel.name }}</h2>
-            <p>{{ hotel.location }}</p>
-            <p>Price per night: ${{ hotel.price_per_night }}</p>
-            <router-link :to="'/services/' + hotel.id"
-              class="mt-4 inline-block px-4 py-2 rounded-md text-md border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition">
-              View Details
-            </router-link>
-          </div>
+            <h2 class="text-xl font-semibold">{{ service.title }}</h2>
+            <p class="text-green-600">Provider: {{ service.provider }}</p>
+            <p class="text-black">Price: USD {{ service.price }}</p>
+
+            <!-- Availability Tag with Rating -->
+            <div class="flex justify-between items-center">
+              <p :class="[
+                'px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
+                service.available ? 'bg-green-500' : 'bg-red-500'
+              ]">
+                {{ service.available ? 'Available' : 'Not Available' }}
+              </p>
+              <!-- Star Rating -->
+              <div class="flex items-center space-x-1 text-yellow-400">
+                <i v-for="n in 5" :key="n" class="fas"
+                  :class="n <= service.rating ? 'fa-star' : 'fa-star-half-alt'"></i>
+              </div>
+            </div>
+          </router-link>
         </div>
       </div>
+      <div v-else class="text-center text-gray-500">No featured properties available.</div>
     </div>
   </section>
 
