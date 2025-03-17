@@ -23,7 +23,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="text-white bg-blue-500">
+  <div class="text-white" style="background-color: rgba(59, 130, 246, 0.7);">
     <!-- Top Navigation -->
     <div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center relative">
       <a href="/" class="text-2xl font-bold">

@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue'
 import TheNavbar from '@/components/TheNavbar.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import axiosInstance from '@/axiosconfig/axiosInstance'
-import bgImage from '@/assets/images/staycation/EliteBg.jpg';
-import geometricImage from '@/assets/images/geometric.png';
+import bgImage from '@/assets/images/staycation/bg.png';
+import geometricImage from '@/assets/images/geometric2.png';
 
 const bgImageUrl = bgImage;
 const geometricUrlImage = geometricImage;
@@ -99,16 +99,19 @@ const scrollRight = () => {
   <TheNavbar />
 
   <!-- Hero Section with Background Video -->
-  <div class="relative h-96">
+  <div class="relative h-96" style="font-family: 'Poppins' sans-serif;">
     <!-- Background Image with a dark overlay -->
     <div class="absolute inset-0">
       <img :src="bgImageUrl" alt="Fallback background image" class="w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-black opacity-60"></div> <!-- Semi-transparent dark overlay -->
+      <div class="absolute inset-0 bg-black opacity-40"></div> <!-- Semi-transparent dark overlay -->
     </div>
 
     <!-- Content Overlaid on the Image -->
     <div class="relative z-10 h-full flex flex-col justify-center items-start text-white px-8 lg:px-16 space-y-6">
-      <h1 class="text-4xl md:text-5xl font-bold">Welcome to Mite_Explorers</h1>
+      <h1 class="text-4xl md:text-5xl font-bold">
+        Welcome to Mite_Explorers
+      </h1>
+
       <p class="text-2xl md:text-xl font-bold max-w-xl text-blue-200">Move · Inspire · Travel · Explore</p>
       <p class="text-xl md:text-xl font-semi max-w-xl">
         Explore breathtaking destinations, indulge in luxurious stays, and enjoy effortless travel experiences—crafted
@@ -202,15 +205,18 @@ const scrollRight = () => {
   </section>
 
   <!-- Featured Properties Section -->
-  <section class="py-16 bg-gray-200">
+  <section class="py-16 relative bg-gray-200">
+    <div class="absolute top-0 right-0 w-full h-full hidden md:block">
+      <img :src="geometricUrlImage" alt="Elite Explorers" class="w-full h-full object-cover opacity-50" />
+    </div>
     <div class="max-w-6xl mx-auto px-2">
       <h2 class="text-2xl font-bold mb-4">Our Featured Properties</h2>
       <p class="text-md mb-6">Explore the most luxurious properties and destinations we offer.</p>
 
       <div v-if="services.length > 0">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
           <router-link v-for="service in services" :key="service.id" :to="`/services/${service.id}`"
-            class="block bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition duration-300 relative">
+            class="block bg-white shadow-md rounded-lg p-4 hover:shadow-md transition duration-300 relative">
             <div v-if="service.image" class="mb-4">
               <img :src="service.image" alt="Service Image" class="w-full h-56 object-contain rounded-md" />
             </div>
