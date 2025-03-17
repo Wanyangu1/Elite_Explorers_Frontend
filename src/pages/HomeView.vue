@@ -68,6 +68,7 @@ const fetchServices = async () => {
         id: service.id,
         title: service.title,
         provider: service.provider,
+        description: service.description,
         price: service.price,
         available: service.available,
         image: serviceImages.length > 0 ? serviceImages[0].image_url : null, // Get first image
