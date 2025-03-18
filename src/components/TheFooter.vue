@@ -28,7 +28,7 @@
             </a>
           </li>
         </ul>
-        <img src="@/assets/images/logo.png" class="img-fluid rounded h-12 mt-2" alt="AfroartSafari Logo" />
+        <img src="@/assets/images/logo1.png" class="img-fluid rounded h-12 mt-2" alt="AfroartSafari Logo" />
       </div>
 
       <!-- About Us Section -->
@@ -109,7 +109,7 @@
     </div>
     <hr class="my-5 border-gray-700" />
     <div class="text-center text-sm">
-      <p>&copy; 2025 EliteExplorers. All rights reserved.</p>
+      <p>&copy; 2025 Mite_Explorers. All rights reserved.</p>
     </div>
   </footer>
 </template>
