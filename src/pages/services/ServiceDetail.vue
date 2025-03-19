@@ -137,7 +137,8 @@ onMounted(fetchServiceDetails);
               price: service.price,
               provider: service.provider,
               location: service.location,
-              description: service.description
+              description: service.description,
+              image: service.images && service.images.length > 0 ? service.images[0] : '' // First Image
             }
           }"
             class="mt-4 px-6 py-2 border-2 border-green-500 text-green-500 rounded-md font-semibold hover:bg-green-500 hover:text-white transition">

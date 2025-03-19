@@ -5,7 +5,6 @@ import useLogout from '@/composables/useLogout'
 
 const { logout } = useLogout()
 const isTopRightMenuOpen = ref(false)
-const isBottomMenuOpen = ref(false)
 const user = ref(null)
 
 const fetchUserProfile = async () => {
@@ -124,59 +123,35 @@ onMounted(() => {
     </div>
 
     <!-- Bottom Navigation -->
+    <!-- Bottom Navigation -->
     <div class="px-6 py-2">
-      <div class="max-w-screen-xl mx-auto flex justify-start space-x-6 hidden md:flex">
+      <div class="max-w-screen-xl mx-auto flex justify-start space-x-6 md:flex">
         <router-link to="/services"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-          <i class="fas fa-bed"></i> Stays
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-bed"></i> <span class="hidden sm:inline ml-2">Stays</span>
         </router-link>
         <router-link to="/comingsoon"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-          <i class="fas fa-plane"></i> Flights
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-plane"></i> <span class="hidden sm:inline ml-2">Flights</span>
         </router-link>
         <router-link to="/comingsoon"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-          <i class="fas fa-car"></i> Car Rentals
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-car"></i> <span class="hidden sm:inline ml-2">Car Rentals</span>
         </router-link>
         <router-link to="/comingsoon"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-          <i class="fas fa-camera-retro"></i> Attractions
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-camera-retro"></i> <span class="hidden sm:inline ml-2">Attractions</span>
         </router-link>
         <router-link to="/comingsoon"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300">
-          <i class="fas fa-taxi"></i> Airport Taxis
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-taxi"></i> <span class="hidden sm:inline ml-2">Airport Taxis</span>
         </router-link>
-      </div>
-
-      <!-- Mobile Bottom Navigation -->
-      <div class="md:hidden">
-        <button class="text-white text-xl" @click="isBottomMenuOpen = !isBottomMenuOpen">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div v-if="isBottomMenuOpen" class="absolute top-0 left-0 mt-24 w-48 p-4 rounded-lg shadow-lg z-50 bg-blue-800">
-          <router-link to="/services"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-bed mr-2"></i> Stays
-          </router-link>
-          <router-link to="/comingsoon"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-plane mr-2"></i> Flights
-          </router-link>
-          <router-link to="/comingsoon"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-car mr-2"></i> Car Rentals
-          </router-link>
-          <router-link to="/comingsoon"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-camera-retro mr-2"></i> Attractions
-          </router-link>
-          <router-link to="/comingsoon"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-taxi mr-2"></i> Airport Taxis
-          </router-link>
-        </div>
       </div>
     </div>
+
+
+    <!-- Mobile Bottom Navigation -->
+
   </div>
 </template>
 

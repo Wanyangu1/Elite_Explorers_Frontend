@@ -3,12 +3,13 @@ import HomeView from '@/pages/HomeView.vue'
 import LoginPage from '@/pages/Registration/LoginPage.vue'
 import SignupPage from '@/pages/Registration/SignupPage.vue'
 import ServiceDetail from '@/pages/services/ServiceDetail.vue'
+import BookingPage from '@/pages/Booking/BookingPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/services',
+      path: '/',
       name: 'home',
       component: HomeView,
     },
@@ -30,8 +31,7 @@ const router = createRouter({
     {
       path: '/booking',
       name: 'BookingPage',
-      component: () => import('@/pages/Booking/BookingPage.vue'),
-      props: (route) => ({ ...route.query }),
+      component: BookingPage,
     },
   ],
 })
