@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import TheNavbar from '@/components/TheNavbar.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import axiosInstance from '@/axiosconfig/axiosInstance'
@@ -8,56 +9,17 @@ import geometricImage from '@/assets/images/geometric2.png';
 
 const bgImageUrl = bgImage;
 const geometricUrlImage = geometricImage;
-const hotels = ref([])
-const filteredHotels = ref([])
-const trendingDestinations = ref([])
-const searchQuery = ref('')
-const services = ref([])
 
-const fetchHotels = async () => {
-  try {
-    const hotelResponse = await axiosInstance.get(`/api/hotels/`)
-    const hotelsData = hotelResponse.data
+const services = ref([]) // Stores all services
+const searchQuery = ref('') // Stores user input for search
+const route = useRoute()
 
-    const imageResponse = await axiosInstance.get(`/api/hotel-images/`)
-    const hotelImagesData = imageResponse.data
-
-    hotels.value = hotelsData.map((hotel) => {
-      const relatedImages = hotelImagesData.filter((image) => image.hotel === hotel.id)
-      if (relatedImages.length > 0) {
-        hotel.image = relatedImages[0].image
-      }
-      return hotel
-    })
-
-    filteredHotels.value = hotels.value
-
-    trendingDestinations.value = hotelImagesData.slice(0, 5)
-  } catch (error) {
-    console.error('Error fetching hotels and images:', error)
-  }
-}
-
-const filterHotels = () => {
-  if (searchQuery.value.trim() === '') {
-    filteredHotels.value = hotels.value
-  } else {
-    filteredHotels.value = hotels.value.filter((hotel) =>
-      hotel.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-  }
-}
-
-// Fetch the hotels when the component is mounted
-onMounted(fetchHotels)
-
+// Fetch services from API
 const fetchServices = async () => {
   try {
-    // Fetch services
     const response = await axiosInstance.get('/api/services/services/')
     const servicesData = response.data
 
-    // Fetch images
     const imagesResponse = await axiosInstance.get('/api/services/images/service-images/')
     const imagesData = imagesResponse.data
 
@@ -68,51 +30,55 @@ const fetchServices = async () => {
         id: service.id,
         title: service.title,
         provider: service.provider,
+        category: service.category, // Ensure API provides a category field
         description: service.description,
         price: service.price,
         available: service.available,
-        image: serviceImages.length > 0 ? serviceImages[0].image_url : null, // Get first image
+        image: serviceImages.length > 0 ? serviceImages[0].image_url : null,
       }
     })
   } catch (error) {
-    console.error('Error fetching services or images:', error)
+    console.error('Error fetching services:', error)
   }
 }
+
+// Computed property to filter services based on search query and category
+const filteredServices = computed(() => {
+  let results = services.value
+  const selectedCategory = route.query.category || ''
+
+  if (selectedCategory) {
+    results = results.filter(service => service.category === selectedCategory)
+  }
+
+  if (searchQuery.value.trim()) {
+    results = results.filter(service =>
+      service.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      service.provider.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      service.category.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  }
+
+  return results
+})
+
+// Watch for category changes and re-fetch services if needed
+watch(() => route.query.category, fetchServices, { immediate: true })
 
 onMounted(fetchServices)
-// Scroll functions for the carousel
-const scrollContainer = ref(null)
-
-const scrollLeft = () => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollBy({ left: -300, behavior: 'smooth' })
-  }
-}
-
-const scrollRight = () => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollBy({ left: 300, behavior: 'smooth' })
-  }
-}
 </script>
 
 <template>
   <TheNavbar />
 
-  <!-- Hero Section with Background Video -->
-  <div class="relative h-96" style="font-family: 'Poppins' sans-serif;">
-    <!-- Background Image with a dark overlay -->
+  <!-- Hero Section -->
+  <div class="relative h-96">
     <div class="absolute inset-0">
-      <img :src="bgImageUrl" alt="Fallback background image" class="w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-black opacity-40"></div> <!-- Semi-transparent dark overlay -->
+      <img :src="bgImageUrl" alt="Background image" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-black opacity-40"></div>
     </div>
-
-    <!-- Content Overlaid on the Image -->
     <div class="relative z-10 h-full flex flex-col justify-center items-start text-white px-8 lg:px-16 space-y-6">
-      <h1 class="text-4xl md:text-5xl font-bold">
-        Welcome to Mite_Explorers
-      </h1>
-
+      <h1 class="text-4xl md:text-5xl font-bold">Welcome to Mite_Explorers</h1>
       <p class="text-2xl md:text-xl font-bold max-w-xl text-blue-200">Move · Inspire · Travel · Explore</p>
       <p class="text-xl md:text-xl font-semi max-w-xl">
         Explore breathtaking destinations, indulge in luxurious stays, and enjoy effortless travel experiences—crafted
@@ -150,73 +116,33 @@ const scrollRight = () => {
 
     <!-- Search Bar -->
     <div class="relative z-10 max-w-3xl mx-auto flex items-center space-x-4">
-      <input v-model="searchQuery" @input="filterHotels" type="text" placeholder="Search for hotels, destinations..."
+      <input v-model="searchQuery" type="text" placeholder="Search for hotels, destinations..."
         class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-      <button @click="filterHotels"
+      <button
         class="bg-transparent border-2 border-black text-indigo-600 py-2 px-6 rounded-lg flex items-center space-x-2 hover:bg-indigo-600 hover:text-white transition">
         <i class="fas fa-search"></i>
         <span>Search</span>
       </button>
     </div>
 
-
     <!-- Message for no results -->
-    <div v-if="filteredHotels.length === 0" class="text-center text-lg font-semibold text-red-600 mt-4">
+    <div v-if="filteredServices.length === 0" class="text-center text-lg font-semibold text-red-600 mt-4">
       No results found for "{{ searchQuery }}".
     </div>
   </div>
 
-  <!-- Property Cards Section -->
-  <section class="py-16 bg-gray-100">
-    <div class="px-4">
-      <h2 class="text-2xl font-bold mb-2">Property types unique to USA</h2>
-      <p class="text-md mb-2 font-sans">Stay in style for your next trip</p>
-
-      <div class="relative">
-        <!-- Left Arrow -->
-        <button @click="scrollLeft"
-          class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded-full z-10">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        </button>
-
-        <div ref="scrollContainer" class="scroll-container flex space-x-6 py-4 px-1 snap-x scroll-smooth w-full">
-          <!-- Property Cards - Add more as needed -->
-          <div v-for="hotel in filteredHotels" :key="hotel.id"
-            class="relative rounded-lg overflow-hidden shadow-lg snap-center w-72 h-72 flex-shrink-0">
-            <img :src="hotel.image" :alt="hotel.name" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent">
-              <div class="absolute inset-x-0 bottom-0 bg-black bg-opacity-10 p-4 text-center text-white">
-                <h3 class="text-2xl font-bold">{{ hotel.name }}</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Arrow -->
-        <button @click="scrollRight"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded-full z-10">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured Properties Section -->
+  <!-- Featured Services Section -->
   <section class="py-16 relative bg-gray-200">
     <div class="absolute top-0 right-0 w-full h-full hidden md:block">
       <img :src="geometricUrlImage" alt="Elite Explorers" class="w-full h-full object-cover opacity-50" />
     </div>
     <div class="max-w-6xl mx-auto px-2">
-      <h2 class="text-2xl font-bold mb-4">Our Featured Properties</h2>
-      <p class="text-md mb-6">Explore the most luxurious properties and destinations we offer.</p>
+      <h2 class="text-2xl font-bold mb-4">{{ route.query.category ? route.query.category : 'All Services' }}</h2>
+      <p class="text-md mb-6">Explore the most luxurious services and destinations we offer.</p>
 
-      <div v-if="services.length > 0">
+      <div v-if="filteredServices.length > 0">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-          <router-link v-for="service in services" :key="service.id" :to="`/services/${service.id}`"
+          <router-link v-for="service in filteredServices" :key="service.id" :to="`/services/${service.id}`"
             class="block bg-white shadow-md rounded-lg p-4 hover:shadow-md transition duration-300 relative">
             <div v-if="service.image" class="mb-4">
               <img :src="service.image" alt="Service Image" class="w-full h-56 object-contain rounded-md" />
@@ -224,55 +150,16 @@ const scrollRight = () => {
             <h2 class="text-xl font-semibold">{{ service.title }}</h2>
             <p class="text-green-600">Provider: {{ service.provider }}</p>
             <p class="text-black">Price: USD {{ service.price }}</p>
-
-            <!-- Availability Tag with Rating -->
-            <div class="flex justify-between items-center">
-              <p :class="[
-                'px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
-                service.available ? 'bg-green-500' : 'bg-red-500'
-              ]">
-                {{ service.available ? 'Available' : 'Not Available' }}
-              </p>
-              <!-- Star Rating -->
-              <div class="flex items-center space-x-1 text-yellow-400">
-                <i v-for="n in 5" :key="n" class="fas"
-                  :class="n <= service.rating ? 'fa-star' : 'fa-star-half-alt'"></i>
-              </div>
-            </div>
+            <p
+              :class="['px-2 py-1 rounded-full text-white text-sm inline-flex items-center', service.available ? 'bg-green-500' : 'bg-red-500']">
+              {{ service.available ? 'Available' : 'Not Available' }}
+            </p>
           </router-link>
         </div>
       </div>
-      <div v-else class="text-center text-gray-500">No featured properties available.</div>
+      <div v-else class="text-center text-gray-500">No featured services available.</div>
     </div>
   </section>
 
   <TheFooter />
 </template>
-
-<style scoped>
-.scroll-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-}
-
-.scroll-container::-webkit-scrollbar {
-  display: none;
-  /* Hide the scrollbar */
-}
-
-.scroll-container {
-  -ms-overflow-style: none;
-  /* Hide scrollbar for IE */
-  scrollbar-width: none;
-  /* Hide scrollbar for Firefox */
-}
-
-/* Ensuring mobile responsiveness for carousel */
-@media (max-width: 768px) {
-  .scroll-container {
-    scroll-snap-type: none;
-    /* Disable snapping on small screens for smooth scrolling */
-  }
-}
-</style>

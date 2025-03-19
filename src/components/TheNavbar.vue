@@ -126,15 +126,15 @@ onMounted(() => {
     <!-- Bottom Navigation -->
     <div class="px-6 py-2">
       <div class="max-w-screen-xl mx-auto flex justify-start space-x-6 md:flex">
-        <router-link to="/services"
+        <router-link :to="{ path: '/', query: { category: 'Hotels & Stays 🏨' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-bed"></i> <span class="hidden sm:inline ml-2">Stays</span>
         </router-link>
-        <router-link to="/comingsoon"
+        <router-link :to="{ path: '/', query: { category: 'Flights ✈️' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-plane"></i> <span class="hidden sm:inline ml-2">Flights</span>
         </router-link>
-        <router-link to="/comingsoon"
+        <router-link :to="{ path: '/', query: { category: 'Car Rentals' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-car"></i> <span class="hidden sm:inline ml-2">Car Rentals</span>
         </router-link>
