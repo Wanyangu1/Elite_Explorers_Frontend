@@ -1,4 +1,6 @@
 <script setup>
+import TheNavbar from '@/components/TheNavbar.vue';
+import TheFooter from '@/components/TheFooter.vue';
 import { useServiceDetail } from '@/composables/useServiceDetail';
 
 const { service, isLoading, error, currentImage, relatedServices, changeImage } = useServiceDetail();

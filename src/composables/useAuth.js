@@ -23,7 +23,7 @@ export default function useAuth() {
       accessToken.value = response.data.access_token
       refreshToken.value = response.data.refresh_token
 
-      router.push('/services')
+      router.push('/')
     } catch (error) {
       console.error(error)
     }
@@ -40,7 +40,7 @@ export default function useAuth() {
       accessToken.value = response.data.access_token
       refreshToken.value = response.data.refresh_token
 
-      router.push('/services')
+      router.push('/')
     } catch (error) {
       console.error(error)
     }

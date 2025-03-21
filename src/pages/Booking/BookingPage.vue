@@ -1,79 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import axiosInstance from '@/axiosconfig/axiosInstance';
+import { useBooking } from '@/composables/useBooking';
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import LifeLine from '@/components/LifeLine.vue';
 
-const route = useRoute();
-const router = useRouter();
-
-// Extracting booking details from query parameters
-const bookingDetails = computed(() => ({
-  id: route.query.id,
-  title: route.query.title,
-  price: route.query.price,
-  provider: route.query.provider,
-  location: route.query.location,
-  description: route.query.description,
-  image: route.query.image,
-  category: route.query.category, // ✅ Added category
-}));
-
-// Compute full image path (assuming images are stored in /media/ on the backend)
-const serviceImage = computed(() => {
-  return bookingDetails.value.image
-    ? `http://localhost:8000/media/${bookingDetails.value.image}`
-    : '/default-service.jpg'; // Fallback image
-});
-
-// Form state using a single ref object
-const customerDetails = ref({
-  name: '',
-  email: '',
-  phone: '',
-  address: '',
-  paymentMethod: 'credit_card',
-  notes: '',
-});
-
-// State management
-const isSubmitting = ref(false);
-const error = ref(null);
-const successMessage = ref(null);
-
-// Submit booking
-const submitBooking = async () => {
-  error.value = null;
-  successMessage.value = null;
-
-  // Basic validation
-  if (!customerDetails.value.name || !customerDetails.value.email || !customerDetails.value.phone || !customerDetails.value.address) {
-    error.value = 'Please fill in all required fields.';
-    return;
-  }
-
-  isSubmitting.value = true;
-
-  try {
-    await axiosInstance.post('/api/bookings/', {
-      service_id: bookingDetails.value.id,
-      category: bookingDetails.value.category,
-      ...customerDetails.value,
-    });
-
-    successMessage.value = 'Booking confirmed successfully!';
-    setTimeout(() => {
-      router.push('/');
-    }, 3000);
-  } catch (err) {
-    error.value = 'Error submitting booking. Please try again.';
-    console.error(err);
-  } finally {
-    isSubmitting.value = false;
-  }
-};
+const {
+  bookingDetails,
+  serviceImage,
+  customerDetails,
+  isSubmitting,
+  error,
+  successMessage,
+  submitBooking
+} = useBooking();
 </script>
 
 <template>
