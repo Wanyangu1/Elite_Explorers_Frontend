@@ -17,7 +17,8 @@ const bookingDetails = computed(() => ({
   provider: route.query.provider,
   location: route.query.location,
   description: route.query.description,
-  image: route.query.image, // Extracted image URL
+  image: route.query.image,
+  category: route.query.category, // ✅ Added category
 }));
 
 // Compute full image path (assuming images are stored in /media/ on the backend)
@@ -58,6 +59,7 @@ const submitBooking = async () => {
   try {
     await axiosInstance.post('/api/bookings/', {
       service_id: bookingDetails.value.id,
+      category: bookingDetails.value.category,
       ...customerDetails.value,
     });
 
@@ -89,6 +91,7 @@ const submitBooking = async () => {
       <div>
         <img :src="serviceImage" alt="Service Image" class="w-full h-56 object-cover rounded-lg mb-4" />
         <h2 class="text-2xl font-semibold">{{ bookingDetails.title }}</h2>
+        <p class="text-gray-800 mt-1"><strong></strong> {{ bookingDetails.category }}</p>
         <p class="text-gray-600 mt-2">{{ bookingDetails.description }}</p>
         <p class="mt-2"><strong>Provider:</strong> {{ bookingDetails.provider }}</p>
         <p><strong>Location:</strong> {{ bookingDetails.location }}</p>
@@ -118,10 +121,11 @@ const submitBooking = async () => {
           </div>
 
           <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-map-marker-alt text-gray-500 px-2"></i>
-            <input v-model="customerDetails.address" type="text" class="w-full p-2 outline-none" placeholder="Location"
-              required />
+            <i class="fas fa-user-friends text-gray-500 px-2"></i>
+            <input v-model="customerDetails.address" type="number" class="w-full p-2 outline-none"
+              placeholder="Number of Persons" required />
           </div>
+
           <!-- Check-in Date -->
           <div class="mb-4">
             <label for="check_in_date" class="block text-sm font-semibold">From When</label>
@@ -143,7 +147,7 @@ const submitBooking = async () => {
           <div class="flex items-center border rounded-md p-0 bg-gray-50">
             <i class="fas fa-sticky-note text-gray-500 px-2"></i>
             <textarea v-model="customerDetails.notes" class="w-full p-2 outline-none"
-              placeholder="Destination (Where to?)"></textarea>
+              placeholder="Special Request"></textarea>
           </div>
 
           <button type="submit"

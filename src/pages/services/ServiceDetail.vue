@@ -1,62 +1,7 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import axiosInstance from '@/axiosconfig/axiosInstance';
-import TheNavbar from '@/components/TheNavbar.vue';
-import TheFooter from '@/components/TheFooter.vue';
+import { useServiceDetail } from '@/composables/useServiceDetail';
 
-const route = useRoute();
-const serviceId = ref(route.params.id);
-const service = ref(null);
-const isLoading = ref(true);
-const error = ref(null);
-const currentImage = ref(null);
-const relatedServices = ref([]);
-
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-const fetchServiceDetails = async () => {
-  try {
-    const response = await axiosInstance.get(`/api/services/services/${serviceId.value}`);
-    service.value = response.data;
-
-    // Set the first image as default if available
-    if (service.value.images && service.value.images.length > 0) {
-      currentImage.value = service.value.images[0];
-    }
-
-    fetchRelatedServices(service.value.category);
-  } catch (err) {
-    error.value = 'Error fetching service details';
-    console.error(err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const fetchRelatedServices = async (category) => {
-  try {
-    const response = await axiosInstance.get(`/api/services/services?category=${category}`);
-    relatedServices.value = response.data.filter(s => s.id !== serviceId.value);
-  } catch (err) {
-    console.error('Error fetching related services', err);
-  }
-};
-
-// Function to change main image when clicking on smaller images
-const changeImage = (image) => {
-  currentImage.value = image;
-};
-
-// Watch for route changes to refetch data
-watch(() => route.params.id, (newId) => {
-  serviceId.value = newId;
-  fetchServiceDetails();
-});
-
-onMounted(fetchServiceDetails);
+const { service, isLoading, error, currentImage, relatedServices, changeImage } = useServiceDetail();
 </script>
 
 <template>
@@ -138,7 +83,8 @@ onMounted(fetchServiceDetails);
               provider: service.provider,
               location: service.location,
               description: service.description,
-              image: service.images && service.images.length > 0 ? service.images[0] : '' // First Image
+              image: service.images && service.images.length > 0 ? service.images[0] : '',
+              category: service.category // Persisting the category
             }
           }"
             class="mt-4 px-6 py-2 border-2 border-green-500 text-green-500 rounded-md font-semibold hover:bg-green-500 hover:text-white transition">
