@@ -1,8 +1,10 @@
 <script setup>
-import { useBooking } from '@/composables/useBooking';
-import TheNavbar from '@/components/TheNavbar.vue';
-import TheFooter from '@/components/TheFooter.vue';
-import LifeLine from '@/components/LifeLine.vue';
+import { ref } from "vue";
+import axios from "axios";
+import { useBooking } from "@/composables/useBooking";
+import TheNavbar from "@/components/TheNavbar.vue";
+import TheFooter from "@/components/TheFooter.vue";
+import LifeLine from "@/components/LifeLine.vue";
 
 const {
   bookingDetails,
@@ -11,83 +13,97 @@ const {
   isSubmitting,
   error,
   successMessage,
-  submitBooking
 } = useBooking();
+
+const submitBooking = async () => {
+  isSubmitting.value = true;
+  error.value = null;
+  successMessage.value = null;
+
+  try {
+    const payload = {
+      ...bookingDetails.value,
+      customer: { ...customerDetails.value }
+    };
+
+    await axios.post("/api/bookings/", payload);
+    successMessage.value = "Booking confirmed!";
+  } catch (err) {
+    error.value = err.response?.data?.message || "An error occurred while booking.";
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const handleSubmit = async () => {
+  await submitBooking();
+};
 </script>
 
 <template>
   <TheNavbar />
   <LifeLine />
+
   <div class="bg-gray-100 px-2 py-4">
     <h1 class="text-3xl font-bold text-center mb-4">Confirm Your Booking</h1>
 
-    <div v-if="error" class="text-red-500 text-center mb-4">{{ error }}</div>
-    <div v-if="successMessage" class="text-green-500 text-center mb-4">{{ successMessage }}</div>
+    <div v-if="error" class="text-red-500 text-center mb-4">
+      {{ error }}
+    </div>
 
-    <!-- Booking Details Section -->
-    <div class=" p-6 max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-      <!-- Left: Service Image & Details -->
+    <div v-if="successMessage" class="text-green-500 text-center mb-4">
+      {{ successMessage }}
+    </div>
+
+    <div class="p-6 max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+      <!-- Service Details Section -->
       <div>
         <img :src="serviceImage" alt="Service Image" class="w-full h-56 object-cover rounded-lg mb-4" />
         <h2 class="text-2xl font-semibold">{{ bookingDetails.title }}</h2>
-        <p class="text-gray-800 mt-1"><strong></strong> {{ bookingDetails.category }}</p>
+        <p class="text-gray-800 mt-1">{{ bookingDetails.category }}</p>
         <p class="text-gray-600 mt-2">{{ bookingDetails.description }}</p>
-        <p class="mt-2"><strong>Provider:</strong> {{ bookingDetails.provider }}</p>
-        <p><strong>Location:</strong> {{ bookingDetails.location }}</p>
-        <p class="text-green-600 text-lg font-bold mt-2">Amount: ${{ bookingDetails.price }}</p>
+        <p class="mt-2">
+          <strong>Provider:</strong> {{ bookingDetails.provider }}
+        </p>
+        <p>
+          <strong>Location:</strong> {{ bookingDetails.location }}
+        </p>
+        <p class="text-green-600 text-lg font-bold mt-2">
+          Amount: ${{ bookingDetails.price }}
+        </p>
       </div>
 
-      <!-- Right: Booking Form -->
+      <!-- Booking Form Section -->
       <div>
         <h3 class="text-xl font-semibold mb-4">Enter Your Details</h3>
-        <form @submit.prevent="submitBooking" class="space-y-4">
-          <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-user text-gray-500 px-2"></i>
-            <input v-model="customerDetails.name" type="text" class="w-full p-2 outline-none" placeholder="Full Name"
-              required />
-          </div>
 
-          <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-envelope text-gray-500 px-2"></i>
-            <input v-model="customerDetails.email" type="email" class="w-full p-2 outline-none"
-              placeholder="Email Address" required />
-          </div>
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+          <input v-model="customerDetails.name" type="text" class="w-full p-2 border rounded-md" placeholder="Full Name"
+            required />
 
-          <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-phone text-gray-500 px-2"></i>
-            <input v-model="customerDetails.phone" type="text" class="w-full p-2 outline-none"
-              placeholder="Phone Number" required />
-          </div>
+          <input v-model="customerDetails.email" type="email" class="w-full p-2 border rounded-md"
+            placeholder="Email Address" required />
 
-          <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-user-friends text-gray-500 px-2"></i>
-            <input v-model="customerDetails.address" type="number" class="w-full p-2 outline-none"
-              placeholder="Number of Persons" required />
-          </div>
+          <input v-model="customerDetails.phone" type="text" class="w-full p-2 border rounded-md"
+            placeholder="Phone Number" required />
 
-          <!-- Check-in Date -->
-          <div class="mb-4">
-            <label for="check_in_date" class="block text-sm font-semibold">From When</label>
-            <div class="flex items-center border border-gray-300 rounded-md">
-              <i class="fas fa-calendar-alt p-2 text-gray-500"></i>
-              <input id="check_in_date" type="date" class="w-full p-2 border-none focus:outline-none" required />
-            </div>
-          </div>
+          <input v-model="customerDetails.persons" type="number" class="w-full p-2 border rounded-md"
+            placeholder="Number of Persons" required />
 
-          <!-- Check-out Date -->
-          <div class="mb-4">
-            <label for="check_out_date" class="block text-sm font-semibold">To When</label>
-            <div class="flex items-center border border-gray-300 rounded-md">
-              <i class="fas fa-calendar-day p-2 text-gray-500"></i>
-              <input id="check_out_date" type="date" class="w-full p-2 border-none focus:outline-none" required />
-            </div>
-          </div>
+          <label for="check_in_date" class="block text-sm font-semibold">
+            From When
+          </label>
+          <input v-model="customerDetails.check_in_date" id="check_in_date" type="date"
+            class="w-full p-2 border rounded-md" required />
 
-          <div class="flex items-center border rounded-md p-0 bg-gray-50">
-            <i class="fas fa-sticky-note text-gray-500 px-2"></i>
-            <textarea v-model="customerDetails.notes" class="w-full p-2 outline-none"
-              placeholder="Special Request"></textarea>
-          </div>
+          <label for="check_out_date" class="block text-sm font-semibold">
+            To When
+          </label>
+          <input v-model="customerDetails.check_out_date" id="check_out_date" type="date"
+            class="w-full p-2 border rounded-md" required />
+
+          <textarea v-model="customerDetails.notes" class="w-full p-2 border rounded-md"
+            placeholder="Special Request"></textarea>
 
           <button type="submit"
             class="w-full bg-green-500 text-white py-2 rounded-md font-semibold hover:bg-green-600 transition"
