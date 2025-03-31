@@ -10,18 +10,19 @@ export default function useAuth() {
   const router = useRouter()
 
   const accessToken = useLocalStorage('access-token', null)
-
   const refreshToken = useLocalStorage('refresh-token', null)
 
   const login = async () => {
     try {
-      const response = await axiosInstance.post('api/login/', {
+      const response = await axiosInstance.post('/api/login/', {
         email: email.value,
         password: password.value,
       })
 
       accessToken.value = response.data.access_token
       refreshToken.value = response.data.refresh_token
+
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken.value}` // ✅ Set global token
 
       router.push('/')
     } catch (error) {
@@ -31,7 +32,7 @@ export default function useAuth() {
 
   const signup = async () => {
     try {
-      const response = await axiosInstance.post('api/register/', {
+      const response = await axiosInstance.post('/api/register/', {
         name: name.value,
         email: email.value,
         password: password.value,
@@ -39,6 +40,8 @@ export default function useAuth() {
 
       accessToken.value = response.data.access_token
       refreshToken.value = response.data.refresh_token
+
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken.value}` // ✅ Set global token
 
       router.push('/')
     } catch (error) {
@@ -48,11 +51,14 @@ export default function useAuth() {
 
   const logout = async () => {
     try {
-      await axiosInstance.post('api/logout/', {
-        refresh: accessToken.value,
+      await axiosInstance.post('/api/logout/', {
+        refresh: refreshToken.value, // 🔹 Use refresh token
       })
+
       accessToken.value = null
       refreshToken.value = null
+      delete axiosInstance.defaults.headers.common['Authorization'] // ✅ Remove token
+
       router.push('/login')
     } catch (error) {
       console.error(error)
@@ -66,5 +72,7 @@ export default function useAuth() {
     login,
     signup,
     logout,
+    accessToken, // ✅ Now accessible anywhere
+    refreshToken,
   }
 }

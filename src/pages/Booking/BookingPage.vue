@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
 import { useBooking } from "@/composables/useBooking";
 import TheNavbar from "@/components/TheNavbar.vue";
 import TheFooter from "@/components/TheFooter.vue";
@@ -13,32 +11,10 @@ const {
   isSubmitting,
   error,
   successMessage,
+  submitBooking,
 } = useBooking();
-
-const submitBooking = async () => {
-  isSubmitting.value = true;
-  error.value = null;
-  successMessage.value = null;
-
-  try {
-    const payload = {
-      ...bookingDetails.value,
-      customer: { ...customerDetails.value }
-    };
-
-    await axios.post("/api/bookings/", payload);
-    successMessage.value = "Booking confirmed!";
-  } catch (err) {
-    error.value = err.response?.data?.message || "An error occurred while booking.";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const handleSubmit = async () => {
-  await submitBooking();
-};
 </script>
+
 
 <template>
   <TheNavbar />
@@ -77,7 +53,7 @@ const handleSubmit = async () => {
       <div>
         <h3 class="text-xl font-semibold mb-4">Enter Your Details</h3>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form @submit.prevent="submitBooking" class="space-y-4">
           <input v-model="customerDetails.name" type="text" class="w-full p-2 border rounded-md" placeholder="Full Name"
             required />
 
