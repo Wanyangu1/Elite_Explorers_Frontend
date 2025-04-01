@@ -15,20 +15,28 @@ const {
 } = useBooking();
 
 const sendToWhatsApp = () => {
-  const phoneNumber = "254731727411"; // Replace with recipient's WhatsApp number
+  const phoneNumber = "254731727411";
 
-  const message = `Inquiry for the availability of this service, attached are my details:
-- Name: ${customerDetails.value.name}
-- Email: ${customerDetails.value.email}
-- Phone: ${customerDetails.value.phone}
-- Persons: ${customerDetails.value.persons}
-- Check-in: ${customerDetails.value.check_in_date}
-- Check-out: ${customerDetails.value.check_out_date}
-- Service: ${bookingDetails.value.title}
-- Provider: ${bookingDetails.value.provider}
-- Location: ${bookingDetails.value.location}
-- Price: $${bookingDetails.value.price}
-- Notes: ${customerDetails.value.notes}`;
+  const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
+
+  const message = `Hello, I am inquiring about the availability of the following service:
+
+🔹 *Service Name:* ${bookingDetails.value.title}
+🔹 *Provider:* ${bookingDetails.value.provider}
+🔹 *Location:* ${bookingDetails.value.location}
+🔹 *Category:* ${bookingDetails.value.category}
+🔹 *Price:* $${bookingDetails.value.price}
+
+📌 *Service Link:* ${serviceLink}
+
+👤 *My Details:*
+- *Name:* ${customerDetails.value.name}
+- *Email:* ${customerDetails.value.email}
+- *Phone:* ${customerDetails.value.phone}
+- *Persons:* ${customerDetails.value.persons}
+- *Check-in:* ${customerDetails.value.check_in_date}
+- *Check-out:* ${customerDetails.value.check_out_date}
+- *Special Notes:* ${customerDetails.value.notes}`;
 
   const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, "_blank");
