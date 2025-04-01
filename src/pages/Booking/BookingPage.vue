@@ -13,8 +13,27 @@ const {
   successMessage,
   submitBooking,
 } = useBooking();
-</script>
 
+const sendToWhatsApp = () => {
+  const phoneNumber = "254731727411"; // Replace with recipient's WhatsApp number
+
+  const message = `Inquiry for the availability of this service, attached are my details:
+- Name: ${customerDetails.value.name}
+- Email: ${customerDetails.value.email}
+- Phone: ${customerDetails.value.phone}
+- Persons: ${customerDetails.value.persons}
+- Check-in: ${customerDetails.value.check_in_date}
+- Check-out: ${customerDetails.value.check_out_date}
+- Service: ${bookingDetails.value.title}
+- Provider: ${bookingDetails.value.provider}
+- Location: ${bookingDetails.value.location}
+- Price: $${bookingDetails.value.price}
+- Notes: ${customerDetails.value.notes}`;
+
+  const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappURL, "_blank");
+};
+</script>
 
 <template>
   <TheNavbar />
@@ -87,6 +106,12 @@ const {
             {{ isSubmitting ? 'Processing...' : 'Confirm Booking' }}
           </button>
         </form>
+
+        <!-- Send to WhatsApp Button -->
+        <button @click="sendToWhatsApp"
+          class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md font-semibold hover:bg-blue-600 transition">
+          Send to WhatsApp
+        </button>
       </div>
     </div>
   </div>
