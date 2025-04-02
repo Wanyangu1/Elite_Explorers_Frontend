@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import { useServiceDetail } from '@/composables/useServiceDetail';
-import geometricImage from '@/assets/images/background.png';
+import geometricImage from '@/assets/images/geometric3.png';
 
 const geometricUrlImage = geometricImage;
 
@@ -223,6 +223,6 @@ onMounted(() => {
 .bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
 }
 </style>

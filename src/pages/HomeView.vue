@@ -129,7 +129,7 @@ onMounted(() => {
       <p class="text-md mb-6">Explore the most luxurious services and destinations we offer.</p>
 
       <div v-if="paginatedServices.length > 0">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <router-link v-for="service in paginatedServices" :key="service.id" :to="`/services/${service.id}`"
             class="block bg-white shadow-md rounded-lg p-4 hover:shadow-md transition duration-300">
             <div v-if="service.image" class="mb-4">
