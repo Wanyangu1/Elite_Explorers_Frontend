@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import { useServiceDetail } from '@/composables/useServiceDetail';
@@ -36,7 +36,7 @@ const totalRelatedPages = computed(() => {
   return Math.ceil(relatedServices.value.length / relatedItemsPerPage) || 1;
 });
 
-// (Optional) Compute visible pages for navigation if you want to display page numbers
+// (Optional) Compute visible pages for navigation
 const visibleRelatedPages = computed(() => {
   const range = 2;
   const start = Math.max(1, currentRelatedPage.value - range);
@@ -142,9 +142,9 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Marketing Section -->
+      <!-- Marketing Section (full-width, no side margins) -->
       <div class="relative p-8 rounded-lg shadow-md my-10 text-center text-white bg-contain bg-center"
-        :style="{ backgroundImage: `url(${geometricUrlImage})` }">
+        :style="{ backgroundImage: `url(${geometricUrlImage})`, marginLeft: '0', marginRight: '0' }">
         <div class="bg-overlay"></div>
         <div class="relative">
           <h2 class="text-3xl font-bold">Boost Your Brand with Us!</h2>
@@ -164,19 +164,18 @@ onMounted(() => {
       <!-- Related Services Section -->
       <div v-if="relatedServices.length > 0" class="mt-15">
         <h2 class="text-2xl font-semibold mb-4">Related Services</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <!-- Grid: 2 columns on phone screens, 3 on md, 4 on lg -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <router-link :to="`/services/${related.id}`" v-for="related in paginatedRelatedServices" :key="related.id"
-            class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 block">
+            class="bg-white p-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 block">
             <img v-if="related.images.length > 0" :src="`http://localhost:8000/media/${related.images[0]}`"
               alt="Related Service" class="w-full h-40 object-cover rounded-md mb-3" />
             <h3 class="text-lg font-bold">{{ related.title }}</h3>
             <p class="text-gray-600 text-sm">{{ related.provider }}</p>
             <p class="text-green-600 font-semibold text-lg">${{ related.price }}</p>
             <div class="flex justify-between items-center mt-2">
-              <p :class="[
-                'px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
-                related.available ? 'bg-green-500' : 'bg-red-500'
-              ]">
+              <p :class="['px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
+                related.available ? 'bg-green-500' : 'bg-red-500']">
                 {{ related.available ? 'Available' : 'Not Available' }}
               </p>
               <div class="flex items-center space-x-1 text-yellow-400">
@@ -187,9 +186,8 @@ onMounted(() => {
           </router-link>
         </div>
 
-        <!-- Pagination Controls for Related Services Positioned on Top of Background -->
-        <div
-          class="absolute bottom-4 left-0 right-0 z-20 flex justify-center items-center space-x-2 pointer-events-auto">
+        <!-- Pagination Controls Below Related Services -->
+        <div class="flex justify-center space-x-2 mt-4">
           <button @click="changeRelatedPage(1)" :disabled="currentRelatedPage === 1"
             class="bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
             title="First page">&laquo;</button>
@@ -211,7 +209,7 @@ onMounted(() => {
             title="Last page">&raquo;</button>
         </div>
         <!-- Display pagination error if any -->
-        <div v-if="paginationError" class="text-red-500 text-center mt-4 relative z-10">
+        <div v-if="paginationError" class="text-red-500 text-center mt-4">
           {{ paginationError }}
         </div>
       </div>
