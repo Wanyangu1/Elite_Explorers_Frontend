@@ -16,7 +16,6 @@ const {
 
 const sendToWhatsApp = () => {
   const phoneNumber = "254731727411";
-
   const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
 
   const message = `Hello, I am inquiring about the availability of the following service:
@@ -41,6 +40,13 @@ const sendToWhatsApp = () => {
   const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, "_blank");
 };
+
+const handleBooking = async () => {
+  await submitBooking();
+  if (!error.value) {
+    sendToWhatsApp();
+  }
+};
 </script>
 
 <template>
@@ -59,49 +65,33 @@ const sendToWhatsApp = () => {
     </div>
 
     <div class="p-6 max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-      <!-- Service Details Section -->
       <div>
         <img :src="serviceImage" alt="Service Image" class="w-full h-56 object-cover rounded-lg mb-4" />
         <h2 class="text-2xl font-semibold">{{ bookingDetails.title }}</h2>
         <p class="text-gray-800 mt-1">{{ bookingDetails.category }}</p>
         <p class="text-gray-600 mt-2">{{ bookingDetails.description }}</p>
-        <p class="mt-2">
-          <strong>Provider:</strong> {{ bookingDetails.provider }}
-        </p>
-        <p>
-          <strong>Location:</strong> {{ bookingDetails.location }}
-        </p>
-        <p class="text-green-600 text-lg font-bold mt-2">
-          Amount: ${{ bookingDetails.price }}
-        </p>
+        <p class="mt-2"><strong>Provider:</strong> {{ bookingDetails.provider }}</p>
+        <p><strong>Location:</strong> {{ bookingDetails.location }}</p>
+        <p class="text-green-600 text-lg font-bold mt-2">Amount: ${{ bookingDetails.price }}</p>
       </div>
 
-      <!-- Booking Form Section -->
       <div>
         <h3 class="text-xl font-semibold mb-4">Enter Your Details</h3>
-
-        <form @submit.prevent="submitBooking" class="space-y-4">
+        <form @submit.prevent="handleBooking" class="space-y-4">
           <input v-model="customerDetails.name" type="text" class="w-full p-2 border rounded-md" placeholder="Full Name"
             required />
-
           <input v-model="customerDetails.email" type="email" class="w-full p-2 border rounded-md"
             placeholder="Email Address" required />
-
           <input v-model="customerDetails.phone" type="text" class="w-full p-2 border rounded-md"
             placeholder="Phone Number" required />
-
           <input v-model="customerDetails.persons" type="number" class="w-full p-2 border rounded-md"
             placeholder="Number of Persons" required />
 
-          <label for="check_in_date" class="block text-sm font-semibold">
-            From When
-          </label>
+          <label for="check_in_date" class="block text-sm font-semibold">From When</label>
           <input v-model="customerDetails.check_in_date" id="check_in_date" type="date"
             class="w-full p-2 border rounded-md" required />
 
-          <label for="check_out_date" class="block text-sm font-semibold">
-            To When
-          </label>
+          <label for="check_out_date" class="block text-sm font-semibold">To When</label>
           <input v-model="customerDetails.check_out_date" id="check_out_date" type="date"
             class="w-full p-2 border rounded-md" required />
 
@@ -111,15 +101,9 @@ const sendToWhatsApp = () => {
           <button type="submit"
             class="w-full bg-green-500 text-white py-2 rounded-md font-semibold hover:bg-green-600 transition"
             :disabled="isSubmitting">
-            {{ isSubmitting ? 'Processing...' : 'Confirm Booking' }}
+            {{ isSubmitting ? 'Processing...' : 'Confirm Booking & Send to WhatsApp' }}
           </button>
         </form>
-
-        <!-- Send to WhatsApp Button -->
-        <button @click="sendToWhatsApp"
-          class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md font-semibold hover:bg-blue-600 transition">
-          Send to WhatsApp
-        </button>
       </div>
     </div>
   </div>
