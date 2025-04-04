@@ -15,7 +15,7 @@ const {
 } = useBooking();
 
 const sendToWhatsApp = () => {
-  const phoneNumber = "254731727411";
+  const phoneNumber = "+15207361677";
   const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
 
   const message = `Hello, I am inquiring about the availability of the following service:

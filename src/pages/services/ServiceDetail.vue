@@ -10,7 +10,7 @@ const geometricUrlImage = geometricImage;
 const { service, isLoading, error, currentImage, relatedServices, changeImage } = useServiceDetail();
 
 const sendWhatsAppMessage = () => {
-  const phoneNumber = "+254731727411";
+  const phoneNumber = "+15207361677";
   const serviceLink = "https://afroartsafary.com/services/";
   const message = `📢 *Advertisement Inquiry*
 (${serviceLink})
