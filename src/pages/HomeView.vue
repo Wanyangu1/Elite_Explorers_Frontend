@@ -14,7 +14,7 @@ const { searchQuery, filteredServices } = useServices();
 const route = useRoute();
 
 // Pagination configuration
-const itemsPerPage = 6;
+const itemsPerPage = 8;
 const currentPage = ref(1);
 const paginationError = ref('');
 

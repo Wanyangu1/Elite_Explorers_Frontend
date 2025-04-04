@@ -31,11 +31,15 @@ onMounted(() => {
 
       <!-- Desktop Navigation -->
       <div class="hidden md:flex items-center space-x-6">
-        <router-link to="https://www.oanda.com/currency-converter/en/?from=USD&to=EUR&amount=1"
-          class="text-white font-semibold hover:text-gray-300">
-          USD
-        </router-link>
-        <img class="rounded-full h-8 w-8" src="@/assets/images/usa.png" alt="USA Flag" />
+        <!-- Currency Selector -->
+        <div class="text-center gap-x-2 flex flex-col items-center space-y-2">
+          <!-- Clickable USD and Flag -->
+          <a href="https://www.oanda.com/currency-converter/en/?from=USD&to=KES&amount=100" target="_blank"
+            rel="noopener noreferrer" class="flex items-center space-x-2 hover:text-blue-600 transition">
+            <span class="text-blue-700 font-semibold">USD</span>
+            <img class="rounded-full h-8 w-8" src="@/assets/images/usa.png" alt="USA Flag" />
+          </a>
+        </div>
         <router-link to="/" class="text-white font-semibold hover:text-gray-300">
           <i class="fas fa-question-circle"></i> Help
         </router-link>
