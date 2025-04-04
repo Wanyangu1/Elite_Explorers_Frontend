@@ -4,6 +4,7 @@ import LoginPage from '@/pages/Registration/LoginPage.vue'
 import SignupPage from '@/pages/Registration/SignupPage.vue'
 import ServiceDetail from '@/pages/services/ServiceDetail.vue'
 import BookingPage from '@/pages/Booking/BookingPage.vue'
+import ListProperty from '@/pages/services/ListProperty.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/booking',
       name: 'BookingPage',
       component: BookingPage,
+    },
+    {
+      path: '/ListProperty',
+      name: 'ListProperty',
+      component: ListProperty,
     },
   ],
 })

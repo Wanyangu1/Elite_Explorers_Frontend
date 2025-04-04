@@ -43,7 +43,7 @@ onMounted(() => {
         <router-link to="/" class="text-white font-semibold hover:text-gray-300">
           <i class="fas fa-question-circle"></i> Help
         </router-link>
-        <router-link to="/" class="text-white font-semibold hover:text-gray-300">
+        <router-link to="/ListProperty" class="text-white font-semibold hover:text-gray-300">
           List Your Property
         </router-link>
 
@@ -92,7 +92,7 @@ onMounted(() => {
         </router-link>
 
         <!-- List Your Property -->
-        <router-link to="/"
+        <router-link to="/ListProperty"
           class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
           <i class="fas fa-building mr-2"></i> List Your Property
         </router-link>
