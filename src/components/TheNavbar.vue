@@ -40,7 +40,7 @@ onMounted(() => {
             <img class="rounded-full h-8 w-8" src="@/assets/images/usa.png" alt="USA Flag" />
           </a>
         </div>
-        <router-link to="/" class="text-white font-semibold hover:text-gray-300">
+        <router-link to="/help" class="text-white font-semibold hover:text-gray-300">
           <i class="fas fa-question-circle"></i> Help
         </router-link>
         <router-link to="/ListProperty" class="text-white font-semibold hover:text-gray-300">
@@ -86,7 +86,7 @@ onMounted(() => {
         </router-link>
 
         <!-- Help -->
-        <router-link to="/"
+        <router-link to="/help"
           class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
           <i class="fas fa-question-circle mr-2"></i> Help
         </router-link>
@@ -130,7 +130,11 @@ onMounted(() => {
     <!-- Bottom Navigation -->
     <div class="px-6 py-2">
       <div class="max-w-screen-xl mx-auto flex justify-start space-x-6 md:flex">
-        <router-link :to="{ path: '/', query: { category: 'Hotels & Stays 🏨' } }"
+        <router-link :to="{ path: '/', query: { category: '' } }"
+          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
+          <i class="fas fa-cogs"></i> <span class="hidden sm:inline ml-2">All Services</span>
+        </router-link>
+        <router-link :to="{ path: '/', query: { category: 'Stays' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-bed"></i> <span class="hidden sm:inline ml-2">Stays</span>
         </router-link>
@@ -142,15 +146,12 @@ onMounted(() => {
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-car"></i> <span class="hidden sm:inline ml-2">Car Rentals</span>
         </router-link>
-        <router-link to="/comingsoon"
+        <router-link :to="{ path: '/', query: { category: 'Attractions' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-camera-retro"></i> <span class="hidden sm:inline ml-2">Attractions</span>
         </router-link>
-        <router-link to="/comingsoon"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-taxi"></i> <span class="hidden sm:inline ml-2">Airport Taxis</span>
-        </router-link>
       </div>
+
     </div>
 
 

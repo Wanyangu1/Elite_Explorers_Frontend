@@ -5,6 +5,7 @@ import SignupPage from '@/pages/Registration/SignupPage.vue'
 import ServiceDetail from '@/pages/services/ServiceDetail.vue'
 import BookingPage from '@/pages/Booking/BookingPage.vue'
 import ListProperty from '@/pages/services/ListProperty.vue'
+import HelpPage from '@/pages/services/HelpPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/ListProperty',
       name: 'ListProperty',
       component: ListProperty,
+    },
+    {
+      path: '/help',
+      name: 'help',
+      component: HelpPage,
     },
   ],
 })

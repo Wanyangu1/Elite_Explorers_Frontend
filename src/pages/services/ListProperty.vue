@@ -232,7 +232,7 @@ const submitToWhatsApp = async () => {
 
     // Encode the message for WhatsApp URL
     const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/254731727411?text=${encodedMessage}`
+    const whatsappUrl = `https://wa.me/15207361677?text=${encodedMessage}`
 
     // Open WhatsApp in a new tab
     window.open(whatsappUrl, '_blank')
@@ -258,17 +258,90 @@ onMounted(() => {
 
 <template>
   <TheNavbar />
+  <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row">
+    <!-- Sidebar - Visible on medium+ screens -->
+    <div class="hidden md:block w-72 pr-8 flex-shrink-0">
+      <div class="sticky top-24">
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 shadow-sm">
+          <div class="flex items-start space-x-3 mb-4">
+            <svg class="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h2 class="text-xl font-bold text-gray-800">List Your Service</h2>
+              <p class="text-sm text-gray-600 mt-1">Complete this form to showcase your business</p>
+            </div>
+          </div>
 
-  <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
-      <div v-if="showSuccess"
-        class="bg-green-100 text-green-800 border border-green-300 rounded-md p-4 mb-4 transition-all duration-300">
-        {{ successMessage }}
+          <div class="space-y-4">
+            <div class="p-3 bg-white rounded-md border border-blue-100">
+              <h3 class="font-medium text-blue-700 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Quick Tips
+              </h3>
+              <ul class="mt-2 text-sm text-gray-600 space-y-2 pl-6 list-disc">
+                <li>Use high-quality images of your work</li>
+                <li>Be detailed in your service description</li>
+                <li>Double-check contact information</li>
+                <li>Set competitive pricing</li>
+              </ul>
+            </div>
+
+            <div class="p-3 bg-blue-50 rounded-md">
+              <h3 class="font-medium text-blue-700 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Approval Process
+              </h3>
+              <p class="mt-2 text-sm text-gray-600">Submissions are typically reviewed within 24-48 hours. We'll notify
+                you via email once approved.</p>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1">
+      <!-- Mobile Welcome Banner - Hidden on medium+ screens -->
+      <div class="md:hidden mb-8 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg p-4">
+        <div class="flex items-start">
+          <svg class="h-5 w-5 text-blue-600 mt-1 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <h3 class="font-medium text-gray-800">Ready to list your service?</h3>
+            <p class="text-sm text-gray-600 mt-1">Complete this form to reach more customers. Our team will review your
+              submission before publishing.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div v-if="showSuccess" class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+        <div class="flex">
+          <svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 class="font-medium text-green-800">Submission Successful!</h3>
+            <p class="text-sm text-green-600">{{ successMessage }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Progress Bar -->
       <div class="mb-8">
         <div class="flex items-center justify-between mb-2">
-          <h2 class="text-2xl font-bold text-gray-900">List Your Service</h2>
+          <h2 class="text-2xl font-bold text-gray-900">Service Listing Form</h2>
           <span class="text-sm font-medium text-gray-500">Step {{ currentStep }} of {{ totalSteps }}</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">

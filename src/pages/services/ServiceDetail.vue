@@ -3,25 +3,13 @@ import { ref, computed, onMounted } from 'vue';
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import { useServiceDetail } from '@/composables/useServiceDetail';
-import geometricImage from '@/assets/images/geometric3.png';
 
-const geometricUrlImage = geometricImage;
 
 const { service, isLoading, error, currentImage, relatedServices, changeImage } = useServiceDetail();
 
-const sendWhatsAppMessage = () => {
-  const phoneNumber = "+15207361677";
-  const serviceLink = "https://afroartsafary.com/services/";
-  const message = `📢 *Advertisement Inquiry*
-(${serviceLink})
-
-Hello, I'm inquiring about the procedure to advertise on your platform. How do I go about it?`;
-  const encodedMessage = encodeURIComponent(message);
-  window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
-};
 
 // --- Pagination for Related Services ---
-const relatedItemsPerPage = 4;
+const relatedItemsPerPage = 8;
 const currentRelatedPage = ref(1);
 const paginationError = ref('');
 
@@ -137,27 +125,8 @@ onMounted(() => {
             }
           }"
             class="mt-4 px-6 py-2 border-2 border-green-500 text-green-500 rounded-md font-semibold hover:bg-green-500 hover:text-white transition">
-            Book Now
+            Make Inquiry
           </router-link>
-        </div>
-      </div>
-
-      <!-- Marketing Section (full-width, no side margins) -->
-      <div class="relative p-8 rounded-lg shadow-md my-10 text-center text-white bg-contain bg-center"
-        :style="{ backgroundImage: `url(${geometricUrlImage})`, marginLeft: '0', marginRight: '0' }">
-        <div class="bg-overlay"></div>
-        <div class="relative">
-          <h2 class="text-3xl font-bold">Boost Your Brand with Us!</h2>
-          <p class="mt-2 font-semibold">
-            Expand your reach and connect with the right audience through strategic, high-impact advertising.
-            Our platform ensures visibility, credibility, and engagement for your business.
-          </p>
-          <div class="flex justify-center mt-6">
-            <button @click="sendWhatsAppMessage"
-              class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 transition flex items-center gap-2">
-              <i class="fab fa-whatsapp text-lg"></i> WhatsApp Us
-            </button>
-          </div>
         </div>
       </div>
 
