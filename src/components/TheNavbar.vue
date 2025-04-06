@@ -138,7 +138,7 @@ onMounted(() => {
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-bed"></i> <span class="hidden sm:inline ml-2">Stays</span>
         </router-link>
-        <router-link :to="{ path: '/', query: { category: 'Flights ✈️' } }"
+        <router-link :to="{ path: '/', query: { category: 'Flights' } }"
           class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
           <i class="fas fa-plane"></i> <span class="hidden sm:inline ml-2">Flights</span>
         </router-link>
