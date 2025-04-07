@@ -1,124 +1,150 @@
 <template>
-  <footer class="text-white py-8" style="background-color: rgba(59, 130, 246, 0.7);">
-    <div class="mb-12 max-w-screen-lg mx-auto px-6 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4 lg:gap-10">
-      <!-- Social Media Section -->
-      <div>
-        <h3 class="text-xl font-semibold mb-1">Follow Us</h3>
-        <hr class="w-14 mb-3" />
-        <h4 class="font-bold mb-4">MiteExplorers.com</h4>
-        <ul class="flex space-x-4">
-          <li>
-            <a href="https://facebook.com" target="_blank" class="hover:text-gray-300">
-              <i class="fab fa-facebook-f"></i>
+  <footer class="bg-gradient-to-r from-blue-800 to-blue-900 text-white pt-12 pb-6">
+    <div class="max-w-7xl mx-auto px-6">
+      <!-- Main Footer Content -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+        <!-- Brand Column -->
+        <div class="space-y-4">
+          <div class="flex items-center space-x-2">
+            <img src="@/assets/images/logo1.png" class="h-12" alt="MiteExplorers Logo" />
+            <span class="text-xl font-bold">MiteExplorers</span>
+          </div>
+          <p class="text-blue-100">
+            Your trusted partner for seamless travel experiences and unforgettable adventures worldwide.
+          </p>
+          <div class="flex space-x-4 pt-2">
+            <a v-for="social in socialLinks" :key="social.name" :href="social.url" target="_blank"
+              class="bg-white/10 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
+              :aria-label="social.name">
+              <i :class="social.icon + ' text-lg'"></i>
             </a>
-          </li>
-          <li>
-            <a href="https://twitter.com" target="_blank" class="hover:text-gray-300">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://instagram.com" target="_blank" class="hover:text-gray-300">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </li>
-          <li>
-            <a href="https://linkedin.com" target="_blank" class="hover:text-gray-300">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-          </li>
-        </ul>
-        <img src="@/assets/images/logo1.png" class="img-fluid rounded h-12 mt-2" alt="AfroartSafari Logo" />
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-white/20">Quick Links</h3>
+          <ul class="space-y-3">
+            <li v-for="link in quickLinks" :key="link.text">
+              <router-link :to="link.to" class="flex items-center space-x-2 hover:text-blue-200 transition-colors">
+                <i :class="link.icon + ' text-blue-300 w-5'"></i>
+                <span>{{ link.text }}</span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-white/20">Our Services</h3>
+          <ul class="space-y-3">
+            <li v-for="service in services" :key="service.text">
+              <router-link :to="service.to" class="flex items-center space-x-2 hover:text-blue-200 transition-colors">
+                <i :class="service.icon + ' text-blue-300 w-5'"></i>
+                <span>{{ service.text }}</span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-white/20">Contact Us</h3>
+          <ul class="space-y-4">
+            <li class="flex items-start space-x-3">
+              <i class="fas fa-phone-alt text-blue-300 mt-1"></i>
+              <div>
+                <p class="font-medium">Phone</p>
+                <a href="tel:+15207361677" class="text-blue-100 hover:text-white">+1 (520) 736-1677</a>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <i class="fas fa-envelope text-blue-300 mt-1"></i>
+              <div>
+                <p class="font-medium">Email</p>
+                <a href="mailto:davidirihose94@gmail.com"
+                  class="text-blue-100 hover:text-white">davidirihose94@gmail.com</a>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <i class="fas fa-map-marker-alt text-blue-300 mt-1"></i>
+              <div>
+                <p class="font-medium">Location</p>
+                <p class="text-blue-100">Phoenix, Arizona, USA</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <!-- About Us Section -->
-      <div>
-        <h3 class="text-xl font-semibold mb-1">About Us</h3>
-        <hr class="w-14 mb-3" />
-        <ul class="space-y-1">
-          <li>
-            <router-link to="/" class="hover:text-gray-300">About EliteExplorers</router-link>
-          </li>
-          <li>
-            <router-link to="/" class="hover:text-gray-300">Careers</router-link>
-          </li>
-          <li>
-            <router-link to="/" class="hover:text-gray-300">Sustainability</router-link>
-          </li>
-          <li class="flex items-center space-x-2">
-            <router-link to="https://www.oanda.com/currency-converter/en/?from=USD&to=EUR&amount=1"
-              class="text-white font-semibold hover:text-gray-300">
-              USD
-            </router-link>
-            <img class="rounded-full h-8 w-8" src="@/assets/images/usa.png" alt="USA Flag" />
-          </li>
-        </ul>
-      </div>
+      <!-- Divider -->
+      <div class="border-t border-white/20 my-6"></div>
 
-      <!-- Services Section -->
-      <div>
-        <h3 class="text-xl font-semibold mb-1">Services</h3>
-        <hr class="w-14 mb-3" />
-        <ul class="space-y-1">
-          <li>
-            <router-link to="/stays" class="flex items-center space-x-2 hover:text-gray-300">
-              <i class="fas fa-bed"></i>
-              <span>Stays</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/comingsoon" class="flex items-center space-x-2 hover:text-gray-300">
-              <i class="fas fa-plane"></i>
-              <span>Flights</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/comingsoon" class="flex items-center space-x-2 hover:text-gray-300">
-              <i class="fas fa-car"></i>
-              <span>Car Rentals</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/comingsoon" class="flex items-center space-x-2 hover:text-gray-300">
-              <i class="fas fa-taxi"></i>
-              <span>Airport Taxis</span>
-            </router-link>
-          </li>
-        </ul>
-      </div>
+      <!-- Bottom Footer -->
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-4 mb-4 md:mb-0">
+          <span>Currency:</span>
+          <div class="flex items-center space-x-2 bg-white/10 px-3 py-1 rounded-full">
+            <img src="@/assets/images/usa.png" class="h-5" alt="USA Flag" />
+            <span>USD</span>
+          </div>
+        </div>
 
-      <!-- Contact Section -->
-      <div>
-        <h3 class="text-xl font-semibold mb-1">Contact</h3>
-        <hr class="w-14 mb-3" />
-        <ul class="space-y-1">
-          <li class="flex items-center space-x-2">
-            <i class="fas fa-phone-alt"></i>
-            <span>+1 (520) 736-1677</span>
-          </li>
-          <li class="flex items-center space-x-2">
-            <i class="fas fa-envelope"></i>
-            <span>davidirihose94@gmail.com</span>
-          </li>
-          <li class="flex items-center space-x-2">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Phoenix, Arizona-USA</span>
-          </li>
-        </ul>
+        <div class="text-center md:text-right">
+          <p class="text-sm text-blue-100">
+            &copy; {{ new Date().getFullYear() }} MiteExplorers. All rights reserved.
+            <router-link to="/privacy" class="hover:text-white ml-4">Privacy Policy</router-link>
+            <router-link to="/terms" class="hover:text-white ml-4">Terms of Service</router-link>
+          </p>
+        </div>
       </div>
-    </div>
-    <hr class="my-5 border-gray-700" />
-    <div class="text-center text-sm">
-      <p>&copy; 2025 Mite_Explorers. All rights reserved.</p>
     </div>
   </footer>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      socialLinks: [
+        { name: 'Facebook', url: 'https://facebook.com', icon: 'fab fa-facebook-f' },
+        { name: 'Twitter', url: 'https://twitter.com', icon: 'fab fa-twitter' },
+        { name: 'Instagram', url: 'https://instagram.com', icon: 'fab fa-instagram' },
+        { name: 'LinkedIn', url: 'https://linkedin.com', icon: 'fab fa-linkedin-in' }
+      ],
+      quickLinks: [
+        { text: 'About Us', to: '/about', icon: 'fas fa-info-circle' },
+        { text: 'Careers', to: '/careers', icon: 'fas fa-briefcase' },
+        { text: 'Blog', to: '/blog', icon: 'fas fa-newspaper' },
+        { text: 'Contact', to: '/contact', icon: 'fas fa-envelope' }
+      ],
+      services: [
+        { text: 'Luxury Stays', to: '/stays', icon: 'fas fa-bed' },
+        { text: 'Flight Bookings', to: '/flights', icon: 'fas fa-plane' },
+        { text: 'Car Rentals', to: '/car-rentals', icon: 'fas fa-car' },
+        { text: 'Travel Packages', to: '/packages', icon: 'fas fa-suitcase-rolling' }
+      ]
+    }
+  }
+}
+</script>
+
 <style scoped>
-footer a:hover {
-  color: #93c5fd;
+footer a {
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-footer hr {
-  border-top: 2px solid #93c5fd;
+footer .router-link-active {
+  color: white;
+  font-weight: 500;
+}
+
+/* Smooth hover transitions */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-2px);
 }
 </style>

@@ -4,12 +4,10 @@ import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import { useServiceDetail } from '@/composables/useServiceDetail';
 
-
 const { service, isLoading, error, currentImage, relatedServices, changeImage } = useServiceDetail();
 
-
 // --- Pagination for Related Services ---
-const relatedItemsPerPage = 8;
+const relatedItemsPerPage = 8; // Reduced for better mobile display
 const currentRelatedPage = ref(1);
 const paginationError = ref('');
 
@@ -24,20 +22,32 @@ const totalRelatedPages = computed(() => {
   return Math.ceil(relatedServices.value.length / relatedItemsPerPage) || 1;
 });
 
-// (Optional) Compute visible pages for navigation
+// Compute visible pages for navigation (mobile-friendly)
 const visibleRelatedPages = computed(() => {
-  const range = 2;
-  const start = Math.max(1, currentRelatedPage.value - range);
-  const end = Math.min(totalRelatedPages.value, currentRelatedPage.value + range);
+  if (totalRelatedPages.value <= 5) {
+    return Array.from({ length: totalRelatedPages.value }, (_, i) => i + 1);
+  }
+  const range = 1; // Smaller range for mobile
+  let start = Math.max(1, currentRelatedPage.value - range);
+  let end = Math.min(totalRelatedPages.value, currentRelatedPage.value + range);
+
+  // Adjust if we're at the beginning or end
+  if (currentRelatedPage.value <= range + 1) {
+    end = Math.min(2 * range + 1, totalRelatedPages.value);
+  } else if (currentRelatedPage.value >= totalRelatedPages.value - range) {
+    start = Math.max(totalRelatedPages.value - 2 * range, 1);
+  }
+
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
-// Change page function for related services (without scrolling)
+// Change page function for related services
 const changeRelatedPage = (newPage) => {
   newPage = Math.max(1, Math.min(newPage, totalRelatedPages.value));
   if (newPage !== currentRelatedPage.value) {
     currentRelatedPage.value = newPage;
     paginationError.value = '';
+    window.scrollTo({ top: document.querySelector('.related-services').offsetTop - 100, behavior: 'smooth' });
   } else {
     paginationError.value = 'No more pages available.';
   }
@@ -80,118 +90,312 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
 
-    <div v-if="isLoading" class="text-center text-lg">Loading service details...</div>
-    <div v-else-if="error" class="text-center text-red-600">{{ error }}</div>
+  <!-- Main Content -->
+  <main class="bg-gray-50 min-h-screen">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="max-w-6xl mx-auto py-20 px-4 text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+      <p class="text-lg text-gray-700">Loading service details...</p>
+    </div>
 
-    <div v-else class="mx-auto p-8">
+    <!-- Error State -->
+    <div v-else-if="error" class="max-w-6xl mx-auto py-20 px-4 text-center">
+      <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 max-w-md mx-auto" role="alert">
+        <p class="font-bold">Error</p>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- Service Content -->
+    <div v-else class="max-w-6xl mx-auto py-8 px-4">
       <!-- Main Service Section -->
-      <div class="flex flex-col sm:flex-row items-center gap-6">
-        <!-- Image Section -->
-        <div class="flex-1 mb-4 sm:mb-0">
-          <div v-if="currentImage" class="w-full h-80 mb-3">
-            <img :src="`http://localhost:8000/media/${currentImage}`" alt="Service Image"
-              class="w-full h-full object-contain rounded-md" />
+      <div class="flex flex-col lg:flex-row gap-8 xl:gap-12">
+        <!-- Image Gallery -->
+        <div class="lg:flex-1">
+          <!-- Main Image -->
+          <div class="relative overflow-hidden rounded-xl shadow-lg bg-white">
+            <div v-if="currentImage" class="aspect-w-16 aspect-h-9">
+              <img :src="`http://localhost:8000/media/${currentImage}`" alt="Service Image"
+                class="w-full h-full object-cover transition-opacity duration-300"
+                :class="{ 'opacity-0': isLoading, 'opacity-100': !isLoading }" />
+            </div>
+            <div v-else class="w-full h-80 bg-gray-200 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-5xl"></i>
+            </div>
+
+            <!-- Image Badges -->
+            <div class="absolute top-4 right-4 flex space-x-2">
+              <span
+                class="bg-white/90 backdrop-blur-sm text-xs font-semibold px-3 py-1 rounded-full shadow-sm flex items-center">
+                <i class="fas fa-camera text-blue-500 mr-1"></i>
+                {{ service.images?.length || 0 }} photos
+              </span>
+            </div>
           </div>
-          <div class="flex gap-2 mt-4">
-            <img v-for="image in service.images" :key="image" :src="`http://localhost:8000/media/${image}`"
-              alt="Service Thumbnail"
-              class="w-24 h-24 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-gray-500"
-              @click="changeImage(image)" />
+
+          <!-- Thumbnail Gallery -->
+          <div v-if="service.images?.length > 1" class="mt-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
+            <button v-for="(image, index) in service.images" :key="index" @click="changeImage(image)" :class="[
+              'relative overflow-hidden rounded-lg border-2 transition-all duration-200 h-20',
+              currentImage === image ? 'border-blue-500 ring-2 ring-blue-200' : 'border-transparent hover:border-gray-300'
+            ]">
+              <img :src="`http://localhost:8000/media/${image}`" alt="Thumbnail" class="w-full h-full object-cover" />
+              <div v-if="currentImage === image" class="absolute inset-0 bg-blue-500/20"></div>
+            </button>
           </div>
         </div>
+
         <!-- Service Details -->
-        <div class="flex-1">
-          <h1 class="text-3xl font-bold">{{ service.title }}</h1>
-          <p class="text-gray-600 text-lg">{{ service.category }}</p>
-          <p class="text-gray-800 mt-2"><strong>Provider:</strong> {{ service.provider }}</p>
-          <p class="text-green-600 text-xl font-semibold mt-2">${{ service.price }}</p>
-          <p class="text-sm text-gray-500">{{ service.location }}</p>
-          <div v-if="service.description" class="mt-6 mb-2">
-            <h3 class="text-xl font-semibold">Service Details:</h3>
-            <p class="text-gray-700 mt-2">{{ service.description }}</p>
+        <div class="lg:flex-1">
+          <div class="bg-white p-6 rounded-xl shadow-lg sticky top-4">
+            <!-- Title and Category -->
+            <div class="mb-4">
+              <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ service.title }}</h1>
+              <div class="flex items-center mt-2">
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded mr-2">
+                  {{ service.category }}
+                </span>
+                <div class="flex items-center text-yellow-400">
+                  <i v-for="n in 5" :key="n" class="fas text-sm"
+                    :class="n <= service.rating ? 'fa-star' : 'fa-star-half-alt'"></i>
+                  <span class="text-gray-500 text-sm ml-1">(24 reviews)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="flex items-center text-gray-600 mb-4">
+              <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+              <span>{{ service.location || 'Location not specified' }}</span>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-6">
+              <p class="text-3xl font-bold text-blue-600">${{ service.price }}</p>
+              <p class="text-sm text-gray-500">per service</p>
+            </div>
+
+            <!-- Availability -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-gray-800">Availability</p>
+                  <p :class="[
+                    'text-sm',
+                    service.available ? 'text-green-600' : 'text-red-600'
+                  ]">
+                    {{ service.available ? 'Available for booking' : 'Currently unavailable' }}
+                  </p>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                  <span class="text-sm text-gray-600">Instant confirmation</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Provider Info -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+              <p class="font-semibold text-gray-800 mb-2">Provider</p>
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                  <i class="fas fa-building text-blue-500"></i>
+                </div>
+                <div>
+                  <p class="font-medium">{{ service.provider }}</p>
+                  <p class="text-sm text-gray-600">Verified partner</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+              <router-link :to="{
+                name: 'BookingPage',
+                query: {
+                  id: service.id,
+                  title: service.title,
+                  price: service.price,
+                  provider: service.provider,
+                  location: service.location,
+                  description: service.description,
+                  image: service.images && service.images.length > 0 ? service.images[0] : '',
+                  category: service.category
+                }
+              }"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
+                <i class="fas fa-calendar-check"></i>
+                Book Now
+              </router-link>
+              <button
+                class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center gap-2">
+                <i class="far fa-heart"></i>
+                Save
+              </button>
+            </div>
           </div>
-          <router-link :to="{
-            name: 'BookingPage',
-            query: {
-              id: service.id,
-              title: service.title,
-              price: service.price,
-              provider: service.provider,
-              location: service.location,
-              description: service.description,
-              image: service.images && service.images.length > 0 ? service.images[0] : '',
-              category: service.category
-            }
-          }"
-            class="mt-4 px-6 py-2 border-2 border-green-500 text-green-500 rounded-md font-semibold hover:bg-green-500 hover:text-white transition">
-            Make Inquiry
-          </router-link>
+        </div>
+      </div>
+
+      <!-- Description Section -->
+      <div class="mt-12 bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Description</h2>
+        <div class="prose max-w-none text-gray-700">
+          <p v-if="service.description">{{ service.description }}</p>
+          <p v-else class="text-gray-500 italic">No description provided for this service.</p>
         </div>
       </div>
 
       <!-- Related Services Section -->
-      <div v-if="relatedServices.length > 0" class="mt-15">
-        <h2 class="text-2xl font-semibold mb-4">Related Services</h2>
-        <!-- Grid: 2 columns on phone screens, 3 on md, 4 on lg -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <router-link :to="`/services/${related.id}`" v-for="related in paginatedRelatedServices" :key="related.id"
-            class="bg-white p-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 block">
-            <img v-if="related.images.length > 0" :src="`http://localhost:8000/media/${related.images[0]}`"
-              alt="Related Service" class="w-full h-40 object-cover rounded-md mb-3" />
-            <h3 class="text-lg font-bold">{{ related.title }}</h3>
-            <p class="text-gray-600 text-sm">{{ related.provider }}</p>
-            <p class="text-green-600 font-semibold text-lg">${{ related.price }}</p>
-            <div class="flex justify-between items-center mt-2">
-              <p :class="['px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
-                related.available ? 'bg-green-500' : 'bg-red-500']">
-                {{ related.available ? 'Available' : 'Not Available' }}
+      <div v-if="relatedServices.length > 0" class="related-services mt-16">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">You might also like</h2>
+          <router-link to="/services" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+            View all <i class="fas fa-chevron-right ml-1 text-sm"></i>
+          </router-link>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <router-link v-for="related in paginatedRelatedServices" :key="related.id" :to="`/services/${related.id}`"
+            class="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+            <div class="relative overflow-hidden h-48">
+              <img v-if="related.images.length > 0" :src="`http://localhost:8000/media/${related.images[0]}`"
+                alt="Related Service"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
+                <i class="fas fa-image text-gray-400 text-3xl"></i>
+              </div>
+              <div v-if="!related.available" class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span class="bg-white text-red-600 font-bold px-3 py-1 rounded-md text-sm">SOLD OUT</span>
+              </div>
+              <div class="absolute top-3 right-3 bg-white/90 rounded-full p-2 shadow-sm">
+                <i class="far fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                {{ related.title }}
+              </h3>
+              <p class="text-gray-500 text-sm mt-1 flex items-center">
+                <i class="fas fa-map-marker-alt text-blue-400 mr-1 text-xs"></i>
+                {{ related.location || 'Various locations' }}
               </p>
-              <div class="flex items-center space-x-1 text-yellow-400">
-                <i v-for="n in 5" :key="n" class="fas"
-                  :class="n <= related.rating ? 'fa-star' : 'fa-star-half-alt'"></i>
+              <div class="flex justify-between items-center mt-3">
+                <p class="text-blue-600 font-bold">${{ related.price }}</p>
+                <div class="flex items-center">
+                  <i class="fas fa-star text-yellow-400 text-sm mr-1"></i>
+                  <span class="text-gray-600 text-sm">4.8</span>
+                </div>
               </div>
             </div>
           </router-link>
         </div>
 
-        <!-- Pagination Controls Below Related Services -->
-        <div class="flex justify-center space-x-2 mt-4">
-          <button @click="changeRelatedPage(1)" :disabled="currentRelatedPage === 1"
-            class="bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-            title="First page">&laquo;</button>
-          <button @click="changeRelatedPage(currentRelatedPage - 1)" :disabled="currentRelatedPage === 1"
-            class="bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-            title="Previous page">&lsaquo;</button>
-          <template v-for="page in visibleRelatedPages" :key="page">
-            <button @click="changeRelatedPage(page)"
-              :class="['py-2 px-3 rounded transition-colors cursor-pointer', page === currentRelatedPage ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white', 'hover:bg-green-600']">
-              {{ page }}
+        <!-- Pagination -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-500">
+            Showing <span class="font-semibold">{{ (currentRelatedPage - 1) * relatedItemsPerPage + 1 }}</span>
+            to <span class="font-semibold">{{ Math.min(currentRelatedPage * relatedItemsPerPage,
+              relatedServices.length)
+            }}</span>
+            of <span class="font-semibold">{{ relatedServices.length }}</span> results
+          </div>
+
+          <div class="flex items-center space-x-1">
+            <button @click="changeRelatedPage(1)" :disabled="currentRelatedPage === 1"
+              class="p-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 hover:bg-gray-50 transition-colors"
+              title="First page">
+              <i class="fas fa-angle-double-left text-sm"></i>
             </button>
-          </template>
-          <button @click="changeRelatedPage(currentRelatedPage + 1)"
-            :disabled="currentRelatedPage === totalRelatedPages"
-            class="bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-            title="Next page">&rsaquo;</button>
-          <button @click="changeRelatedPage(totalRelatedPages)" :disabled="currentRelatedPage === totalRelatedPages"
-            class="bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-            title="Last page">&raquo;</button>
+            <button @click="changeRelatedPage(currentRelatedPage - 1)" :disabled="currentRelatedPage === 1"
+              class="p-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 hover:bg-gray-50 transition-colors"
+              title="Previous page">
+              <i class="fas fa-angle-left text-sm"></i>
+            </button>
+
+            <template v-for="page in visibleRelatedPages" :key="page">
+              <button @click="changeRelatedPage(page)" :class="[
+                'w-10 h-10 rounded-lg border flex items-center justify-center',
+                page === currentRelatedPage
+                  ? 'bg-blue-600 border-blue-600 text-white'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              ]">
+                {{ page }}
+              </button>
+            </template>
+
+            <button @click="changeRelatedPage(currentRelatedPage + 1)"
+              :disabled="currentRelatedPage === totalRelatedPages"
+              class="p-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 hover:bg-gray-50 transition-colors"
+              title="Next page">
+              <i class="fas fa-angle-right text-sm"></i>
+            </button>
+            <button @click="changeRelatedPage(totalRelatedPages)" :disabled="currentRelatedPage === totalRelatedPages"
+              class="p-2 rounded-lg border border-gray-300 text-gray-700 disabled:opacity-50 hover:bg-gray-50 transition-colors"
+              title="Last page">
+              <i class="fas fa-angle-double-right text-sm"></i>
+            </button>
+          </div>
         </div>
-        <!-- Display pagination error if any -->
-        <div v-if="paginationError" class="text-red-500 text-center mt-4">
+
+        <div v-if="paginationError" class="mt-4 text-center text-red-500 font-medium">
           {{ paginationError }}
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <TheFooter />
 </template>
 
 <style scoped>
-.bg-overlay {
+/* Custom styles for better mobile experience */
+@media (max-width: 640px) {
+  .sticky {
+    position: static;
+  }
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+/* Line clamping for text */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Prose styling for descriptions */
+.prose {
+  line-height: 1.6;
+}
+
+.prose p {
+  margin-bottom: 1em;
+}
+
+/* Aspect ratio for images */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 56.25%;
+  /* 16:9 aspect ratio */
+}
+
+.aspect-w-16>* {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 </style>

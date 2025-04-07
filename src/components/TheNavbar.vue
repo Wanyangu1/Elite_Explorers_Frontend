@@ -6,6 +6,7 @@ import useLogout from '@/composables/useLogout'
 const { logout } = useLogout()
 const isTopRightMenuOpen = ref(false)
 const user = ref(null)
+const isScrolled = ref(false)
 
 const fetchUserProfile = async () => {
   try {
@@ -18,148 +19,187 @@ const fetchUserProfile = async () => {
 
 onMounted(() => {
   fetchUserProfile()
+  window.addEventListener('scroll', handleScroll)
 })
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 10
+}
+
+const navLinks = [
+  { name: 'All Services', icon: 'fas fa-cogs', category: '' },
+  { name: 'Stays', icon: 'fas fa-bed', category: 'Stays' },
+  { name: 'Flights', icon: 'fas fa-plane', category: 'Flights' },
+  { name: 'Car Rentals', icon: 'fas fa-car', category: 'Car Rentals' },
+  { name: 'Attractions', icon: 'fas fa-camera-retro', category: 'Attractions' }
+]
 </script>
 
 <template>
-  <div class="text-white" style="background-color: rgba(59, 130, 246, 0.7);">
+  <header class="fixed w-full z-50 transition-all duration-300" :class="{
+    'bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg': isScrolled,
+    'bg-gradient-to-r from-blue-800/90 to-blue-700/90': !isScrolled
+  }">
     <!-- Top Navigation -->
-    <div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center relative">
-      <a href="/" class="text-2xl font-bold">
-        <span class="text-white">MiteExplorers.com</span>
-      </a>
+    <div class="max-w-7xl mx-auto px-6 py-0">
+      <div class="flex justify-between items-center">
+        <!-- Logo -->
+        <router-link to="/" class="flex items-center space-x-2">
+          <img src="@/assets/images/logo1.png" class="h-10" alt="MiteExplorers Logo" />
+          <span class="text-xl font-bold text-white hidden sm:inline">MiteExplorers</span>
+        </router-link>
 
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-6">
-        <!-- Currency Selector -->
-        <div class="text-center gap-x-2 flex flex-col items-center space-y-2">
-          <!-- Clickable USD and Flag -->
+        <!-- Desktop Navigation -->
+        <nav class="hidden lg:flex items-center space-x-6">
+          <!-- Currency Selector -->
+          <div class="relative group">
+            <a href="https://www.oanda.com/currency-converter/en/?from=USD&to=KES&amount=100" target="_blank"
+              class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition">
+              <span class="font-medium text-white">USD</span>
+              <img class="h-6 w-6 rounded-full" src="@/assets/images/usa.png" alt="USA Flag" />
+            </a>
+          </div>
+
+          <router-link to="/help" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition">
+            <i class="fas fa-question-circle text-white"></i>
+            <span class="text-white">Help</span>
+          </router-link>
+
+          <router-link to="/ListProperty"
+            class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition">
+            <i class="fas fa-building text-white"></i>
+            <span class="text-white">List Property</span>
+          </router-link>
+
+          <!-- User Authentication Links -->
+          <template v-if="user">
+            <div class="relative group">
+              <button class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-white">{{ user.name }}</span>
+              </button>
+              <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+                <router-link to="/profile" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
+                  My Profile
+                </router-link>
+                <router-link to="/bookings" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
+                  My Bookings
+                </router-link>
+                <button @click="logout" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
+                  Logout
+                </button>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <router-link to="/login"
+              class="px-4 py-2 rounded-lg bg-white/0 border border-white text-white hover:bg-white hover:text-blue-600 transition">
+              Login
+            </router-link>
+            <router-link to="/signup" class="px-4 py-2 rounded-lg bg-white text-blue-600 hover:bg-blue-50 transition">
+              Sign Up
+            </router-link>
+          </template>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button @click="isTopRightMenuOpen = !isTopRightMenuOpen"
+          class="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95"
+        enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75"
+        leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+        <div v-if="isTopRightMenuOpen" class="lg:hidden mt-4 pb-4 space-y-2">
           <a href="https://www.oanda.com/currency-converter/en/?from=USD&to=KES&amount=100" target="_blank"
-            rel="noopener noreferrer" class="flex items-center space-x-2 hover:text-blue-600 transition">
-            <span class="text-blue-700 font-semibold">USD</span>
-            <img class="rounded-full h-8 w-8" src="@/assets/images/usa.png" alt="USA Flag" />
+            class="flex items-center space-x-2 px-4 py-3 rounded-lg bg-white/10 text-white">
+            <span>USD</span>
+            <img class="h-6 w-6 rounded-full" src="@/assets/images/usa.png" alt="USA Flag" />
           </a>
+
+          <router-link to="/help" class="flex items-center space-x-2 px-4 py-3 rounded-lg bg-white/10 text-white">
+            <i class="fas fa-question-circle"></i>
+            <span>Help</span>
+          </router-link>
+
+          <router-link to="/ListProperty"
+            class="flex items-center space-x-2 px-4 py-3 rounded-lg bg-white/10 text-white">
+            <i class="fas fa-building"></i>
+            <span>List Property</span>
+          </router-link>
+
+          <template v-if="user">
+            <div class="px-4 py-3 rounded-lg bg-white/10">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-white">{{ user.name }}</span>
+              </div>
+              <div class="mt-2 space-y-2">
+                <router-link to="/profile" class="block px-4 py-2 rounded-lg bg-white/5 text-white">
+                  My Profile
+                </router-link>
+                <router-link to="/bookings" class="block px-4 py-2 rounded-lg bg-white/5 text-white">
+                  My Bookings
+                </router-link>
+                <button @click="logout" class="w-full text-left px-4 py-2 rounded-lg bg-red-500/10 text-red-300">
+                  Logout
+                </button>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <router-link to="/login" class="block px-4 py-3 rounded-lg bg-white/10 text-white text-center">
+              Login
+            </router-link>
+            <router-link to="/signup" class="block px-4 py-3 rounded-lg bg-white text-blue-600 text-center">
+              Sign Up
+            </router-link>
+          </template>
         </div>
-        <router-link to="/help" class="text-white font-semibold hover:text-gray-300">
-          <i class="fas fa-question-circle"></i> Help
-        </router-link>
-        <router-link to="/ListProperty" class="text-white font-semibold hover:text-gray-300">
-          List Your Property
-        </router-link>
-
-        <!-- User Authentication Links -->
-        <template v-if="user">
-          <div class="flex items-center space-x-4">
-            <div class="border border-white text-white px-4 py-1 rounded-md font-semibold">
-              <i class="fas fa-user"></i> {{ user.name }}
-            </div>
-            <button
-              class="border border-white text-white px-4 py-1 rounded-md font-semibold hover:bg-red-600 hover:border-red-600 transition duration-300"
-              @click="logout">
-              Logout
-            </button>
-          </div>
-        </template>
-        <template v-else>
-          <router-link to="/login"
-            class="border-2 border-white text-white px-4 py-1 rounded-md hover:bg-white hover:text-blue-600 transition duration-300">
-            Login
-          </router-link>
-          <router-link to="/signup"
-            class="border-2 border-white text-white px-4 py-1 rounded-md hover:bg-white hover:text-blue-600 transition duration-300">
-            Signup
-          </router-link>
-        </template>
-      </div>
-
-      <!-- Mobile Hamburger Menu -->
-      <button class="md:hidden text-white text-xl" @click="isTopRightMenuOpen = !isTopRightMenuOpen">
-        <i class="fas fa-bars"></i>
-      </button>
-
-      <div v-if="isTopRightMenuOpen"
-        class="absolute top-0 right-0 mt-12 w-48 p-4 rounded-lg shadow-lg z-50 bg-blue-700">
-        <!-- Currency Converter -->
-        <router-link to="https://www.oanda.com/currency-converter/en/?from=USD&to=EUR&amount=1" target="_blank"
-          class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-          <i class="fas fa-dollar-sign mr-2"></i> USD
-        </router-link>
-
-        <!-- Help -->
-        <router-link to="/help"
-          class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-          <i class="fas fa-question-circle mr-2"></i> Help
-        </router-link>
-
-        <!-- List Your Property -->
-        <router-link to="/ListProperty"
-          class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-          <i class="fas fa-building mr-2"></i> List Your Property
-        </router-link>
-
-        <!-- User Links -->
-        <template v-if="user">
-          <div class="block text-white py-2">
-            <div class="flex items-center font-semibold">
-              <i class="fas fa-user-circle mr-2"></i> {{ user.name }}
-            </div>
-            <button
-              class="mt-2 border border-white text-white px-4 py-1 rounded-md font-semibold hover:bg-red-600 transition duration-300"
-              @click="logout">
-              <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </button>
-          </div>
-        </template>
-        <template v-else>
-          <!-- Login -->
-          <router-link to="/login"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-sign-in-alt mr-2"></i> Login
-          </router-link>
-
-          <!-- Signup -->
-          <router-link to="/signup"
-            class="flex items-center text-white py-2 hover:bg-blue-600 hover:text-white transition duration-300">
-            <i class="fas fa-user-plus mr-2"></i> Signup
-          </router-link>
-        </template>
-      </div>
+      </transition>
     </div>
 
-    <!-- Bottom Navigation -->
-    <!-- Bottom Navigation -->
-    <div class="px-6 py-2">
-      <div class="max-w-screen-xl mx-auto flex justify-start space-x-6 md:flex">
-        <router-link :to="{ path: '/', query: { category: '' } }"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-cogs"></i> <span class="hidden sm:inline ml-2">All Services</span>
-        </router-link>
-        <router-link :to="{ path: '/', query: { category: 'Stays' } }"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-bed"></i> <span class="hidden sm:inline ml-2">Stays</span>
-        </router-link>
-        <router-link :to="{ path: '/', query: { category: 'Flights' } }"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-plane"></i> <span class="hidden sm:inline ml-2">Flights</span>
-        </router-link>
-        <router-link :to="{ path: '/', query: { category: 'Car Rentals' } }"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-car"></i> <span class="hidden sm:inline ml-2">Car Rentals</span>
-        </router-link>
-        <router-link :to="{ path: '/', query: { category: 'Attractions' } }"
-          class="text-white px-4 py-2 border border-white rounded-full hover:bg-white hover:text-blue-600 transition duration-300 text-sm sm:text-base flex items-center">
-          <i class="fas fa-camera-retro"></i> <span class="hidden sm:inline ml-2">Attractions</span>
-        </router-link>
+    <!-- Category Navigation -->
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-6 py-2">
+        <div class="flex overflow-x-auto space-x-2 py-1 hide-scrollbar">
+          <router-link v-for="link in navLinks" :key="link.name" :to="{ path: '/', query: { category: link.category } }"
+            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium text-white hover:bg-white/20 transition flex items-center space-x-2 border border-white/20"
+            active-class="bg-white/10 border-white/30">
+            <i :class="link.icon"></i>
+            <span class="hidden sm:inline">{{ link.name }}</span> <!-- <-- this is the magic -->
+          </router-link>
+
+        </div>
       </div>
-
     </div>
+  </header>
 
-
-    <!-- Mobile Bottom Navigation -->
-
-  </div>
+  <!-- Spacer for fixed header -->
+  <div class="h-24"></div>
 </template>
 
 <style scoped>
-/* Optional custom styling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transitions */
+.transition {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 </style>
