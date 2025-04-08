@@ -7,6 +7,7 @@ import BookingPage from '@/pages/Booking/BookingPage.vue'
 import ListProperty from '@/pages/services/ListProperty.vue'
 import HelpPage from '@/pages/services/HelpPage.vue'
 import TravelDocuments from '@/pages/Documents/TravelDocuments.vue'
+import VisaApplication from '@/pages/Documents/VisaApplication.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/documents',
       name: 'documents',
       component: TravelDocuments,
+    },
+    {
+      path: '/visa',
+      name: 'visa',
+      component: VisaApplication,
     },
   ],
 })
