@@ -78,13 +78,13 @@ onMounted(() => {
       </p>
       <div class="space-y-4">
         <div class="flex space-x-4">
-          <router-link to="/services"
+          <router-link to="/documents"
             class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
-            Explore Stays
+            Greencard
           </router-link>
-          <router-link to="/comingsoon"
+          <router-link to="/documents"
             class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
-            View More
+            Visa Application
           </router-link>
         </div>
       </div>

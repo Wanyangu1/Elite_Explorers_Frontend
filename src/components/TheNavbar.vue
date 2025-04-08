@@ -38,7 +38,7 @@ const navLinks = [
 <template>
   <header class="fixed w-full z-50 transition-all duration-300" :class="{
     'bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg': isScrolled,
-    'bg-gradient-to-r from-blue-800/90 to-blue-700/90': !isScrolled
+    'bg-gradient-to-r from-blue-500 to-blue-600': !isScrolled
   }">
     <!-- Top Navigation -->
     <div class="max-w-7xl mx-auto px-6 py-0">

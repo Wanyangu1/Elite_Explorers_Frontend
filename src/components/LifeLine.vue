@@ -1,6 +1,6 @@
 <template>
   <!-- Booking Progress Tracker -->
-  <div class="bg-white py-4 px-4 md:px-8 shadow-sm">
+  <div class="bg-white py-6 px-4 md:px-8 shadow-sm">
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between relative">
         <!-- Progress line -->
@@ -8,7 +8,7 @@
 
         <!-- Completed progress -->
         <div
-          class="absolute top-1/2 left-0 h-1.5 bg-blue-500 -translate-y-1/2 z-1 rounded-full transition-all duration-500"
+          class="absolute top-1/2 left-0 h-1.5 bg-blue-200 -translate-y-1/2 z-1 rounded-full transition-all duration-500"
           :style="`width: ${progressPercentage}%`"></div>
 
         <!-- Steps -->
@@ -49,7 +49,7 @@ export default {
   props: {
     currentStep: {
       type: Number,
-      default: 1
+      default: 3
     }
   },
   computed: {
@@ -73,11 +73,11 @@ export default {
           tooltip: 'Enter your details'
         },
         {
-          label: 'Payment',
+          label: 'Review',
           icon: 'fas fa-credit-card',
           completed: this.currentStep > 3,
           active: this.currentStep === 3,
-          tooltip: 'Secure payment'
+          tooltip: 'Confirm your details'
         },
         {
           label: 'Confirmation',
