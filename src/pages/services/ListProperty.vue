@@ -157,10 +157,14 @@ const submitToBackend = async () => {
     formData.append('availability', availability.value)
     formData.append('location', location.value)
 
-    // Append the images correctly
-    images.value.forEach((image) => {
-      formData.append('service_images', image)  // Append each image file directly
-    })
+
+    formData.append('service_images', images.value.map((image) => ({
+      image
+    })))
+
+    // formData.append('service_images', images.value) // Append the first image file directly
+
+
 
     const response = await axiosInstance.post(
       'http://localhost:8000/api/PropertyList/submit/PropertyToList/',
@@ -364,7 +368,7 @@ onMounted(() => {
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Your business name">
               <p v-if="errorMessages.business_name" class="mt-1 text-sm text-red-600">{{ errorMessages.business_name[0]
-                }}</p>
+              }}</p>
             </div>
 
             <!-- Description -->

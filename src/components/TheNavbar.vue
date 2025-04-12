@@ -28,10 +28,10 @@ const handleScroll = () => {
 
 const navLinks = [
   { name: 'All Services', icon: 'fas fa-cogs', category: '' },
-  { name: 'Stays', icon: 'fas fa-bed', category: 'Stays' },
+  { name: 'Hotels', icon: 'fas fa-bed', category: 'Stays' },
   { name: 'Flights', icon: 'fas fa-plane', category: 'Flights' },
   { name: 'Car Rentals', icon: 'fas fa-car', category: 'Car Rentals' },
-  { name: 'Attractions', icon: 'fas fa-camera-retro', category: 'Attractions' }
+  { name: 'Tour Packages', icon: 'fas fa-camera-retro', category: 'Attractions' }
 ]
 </script>
 
@@ -45,7 +45,7 @@ const navLinks = [
       <div class="flex justify-between items-center">
         <!-- Logo -->
         <router-link to="/" class="flex items-center space-x-2">
-          <img src="@/assets/images/logo1.png" class="h-10" alt="MiteExplorers Logo" />
+          <img src="@/assets/images/logo3.png" class="h-10" alt="MiteExplorers Logo" />
           <span class="text-xl font-bold text-white hidden sm:inline">MiteExplorers</span>
         </router-link>
 
@@ -83,9 +83,6 @@ const navLinks = [
               <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
                 <router-link to="/profile" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
                   My Profile
-                </router-link>
-                <router-link to="/bookings" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
-                  My Bookings
                 </router-link>
                 <button @click="logout" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
                   Logout

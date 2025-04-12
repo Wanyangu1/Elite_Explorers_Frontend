@@ -63,7 +63,7 @@ onMounted(() => {
 
   <div class="bg-gray-100 py-2">
     <!-- Booking Lifeline -->
-    <div class="shadow-sm py-1 px-6 mb-2">
+    <div class="shadow-sm py-1 px-6 mb-1 mt-2">
       <div class="flex items-center justify-between max-w-3xl mx-auto">
         <!-- Service Selection -->
         <div class="flex flex-col items-center">
@@ -80,7 +80,7 @@ onMounted(() => {
         <!-- Payment -->
         <div class="flex flex-col items-center">
           <i class="fas fa-credit-card text-blue-500 text-2xl"></i>
-          <p class="text-sm text-gray-600 mt-1">Payment</p>
+          <p class="text-sm text-gray-600 mt-1">Review</p>
         </div>
         <div class="w-20 h-1 bg-gray-300"></div>
         <!-- Confirmation -->

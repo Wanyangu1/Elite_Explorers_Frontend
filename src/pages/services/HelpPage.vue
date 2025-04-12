@@ -43,20 +43,8 @@ function submitForm() {
 <template>
   <TheNavbar />
   <div class="bg-gray-50 min-h-screen">
-    <!-- Header Bar -->
-    <nav class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <div class="flex items-center">
-            <i class="fas fa-hands-helping text-blue-600 text-xl mr-2"></i>
-            <span class="text-xl font-semibold text-gray-900">ServiceHub Help</span>
-          </div>
-        </div>
-      </div>
-    </nav>
-
     <!-- Content Section -->
-    <div class="py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row">
+    <div class="py-10 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row">
       <!-- Sidebar -->
       <aside class="hidden md:block w-72 pr-8">
         <div class="sticky top-24">

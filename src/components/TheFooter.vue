@@ -6,8 +6,7 @@
         <!-- Brand Column -->
         <div class="space-y-4">
           <div class="flex items-center space-x-2">
-            <img src="@/assets/images/logo1.png" class="h-12" alt="MiteExplorers Logo" />
-            <span class="text-xl font-bold">MiteExplorers</span>
+            <img src="@/assets/images/logo3.png" class="h-12" alt="MiteExplorers Logo" />
           </div>
           <p class="text-blue-100">
             Your trusted partner for seamless travel experiences and unforgettable adventures worldwide.

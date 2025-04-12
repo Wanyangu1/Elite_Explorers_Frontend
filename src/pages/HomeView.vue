@@ -5,44 +5,62 @@ import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
 import useServices from '@/composables/useServices';
 import bgImage from '@/assets/images/staycation/bg.png';
-import geometricImage from '@/assets/images/geometric2.png';
 
 const bgImageUrl = bgImage;
-const geometricUrlImage = geometricImage;
 
 const { searchQuery, filteredServices } = useServices();
 const route = useRoute();
 
+const activeCategory = computed(() => route.query.category || '');
+const categoryFilteredServices = computed(() => {
+  if (!activeCategory.value) return filteredServices.value;
+  return filteredServices.value.filter(service =>
+    service.category?.toLowerCase() === activeCategory.value.toLowerCase()
+  );
+});
+const quickView = (service) => {
+  const serviceId = service.id;
+  window.open(`/services/${serviceId}`, '_blank');
+  console.log('Quick view:', service);
+};
+const resetFilters = () => {
+  // Implement filter reset logic
+  searchQuery.value = '';
+  activeCategory.value = '';
+  currentPage.value = 1;
+};
 // Pagination configuration
 const itemsPerPage = 8;
 const currentPage = ref(1);
 const paginationError = ref('');
 
-// Reset to page 1 when search changes
+// Watch search query to reset pagination
 watch(searchQuery, () => {
   currentPage.value = 1;
 });
 
-// Computed property for paginated services
+// Watch route changes to reset pagination
+watch(route, () => {
+  currentPage.value = 1;
+});
+
+// Paginate services
 const paginatedServices = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return filteredServices.value.slice(start, start + itemsPerPage);
+  return categoryFilteredServices.value.slice(start, start + itemsPerPage);
 });
 
-// Compute total pages
 const totalPages = computed(() => {
-  return Math.ceil(filteredServices.value.length / itemsPerPage);
+  return Math.ceil(categoryFilteredServices.value.length / itemsPerPage);
 });
 
-// Calculate visible page numbers for navigation
 const visiblePages = computed(() => {
-  const range = 2; // Number of pages to show around current page
+  const range = 2;
   const start = Math.max(1, currentPage.value - range);
   const end = Math.min(totalPages.value, currentPage.value + range);
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
-// Page change handler with boundary checks (without scrolling to top)
 const changePage = (newPage) => {
   newPage = Math.max(1, Math.min(newPage, totalPages.value));
   if (newPage !== currentPage.value) {
@@ -56,142 +74,463 @@ const changePage = (newPage) => {
 onMounted(() => {
   console.log('HomeView mounted');
 });
+
+// 🔍 Flight Search Logic
+const origin = ref('');
+const destination = ref('');
+const departDate = ref('');
+
+
+const searchFlights = () => {
+  const originCode = origin.value.toLowerCase();
+  const destinationCode = destination.value.toLowerCase();
+  const formattedDate = departDate.value;
+
+  const tripUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=https%3A%2F%2Fus.trip.com%2Fflights%2Fshowfarefirst%3Fdcity%3D${originCode}%26acity%3D${destinationCode}%26ddate%3D${formattedDate}%26triptype%3Dow%26class%3Dy%26quantity%3D1%26searchboxarg%3Dt%26nonstoponly%3Doff%26locale%3Den-US%26curr%3DUSD&campaign_id=121`;
+
+  window.open(tripUrl, '_blank');
+};
 </script>
 
 <template>
   <TheNavbar />
-
   <!-- Hero Section -->
-  <div class="relative h-96">
-    <div class="absolute inset-0">
-      <img :src="bgImageUrl" alt="Background image" class="w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-black opacity-40"></div>
+  <div class="relative h-screen min-h-[32rem]">
+    <!-- Background with parallax effect -->
+    <div class="absolute inset-0 overflow-hidden">
+      <img :src="bgImageUrl" alt="Travel the world with Mite_Explorers"
+        class="w-full h-full object-cover object-center scale-110 animate-zoom-in-out" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-blue-900/40"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_65%,rgba(0,0,0,0.7))]"></div>
     </div>
-    <div class="relative z-10 h-full flex flex-col justify-center items-start text-white px-8 lg:px-16 space-y-6">
-      <h1 class="text-4xl md:text-5xl font-bold">Welcome to Mite_Explorers</h1>
-      <p class="text-2xl md:text-xl font-bold max-w-xl text-blue-200">
-        Move · Inspire · Travel · Explore
-      </p>
-      <p class="text-xl md:text-xl font-semi max-w-xl">
-        Explore breathtaking destinations, indulge in luxurious stays, and enjoy effortless travel experiences—
-        crafted to make every journey extraordinary.
-      </p>
-      <div class="space-y-4">
-        <div class="flex space-x-4">
-          <router-link to="/documents"
-            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
-            Greencard
-          </router-link>
-          <router-link to="/documents"
-            class="border border-gray-100 text-white font-normal py-3 px-6 rounded-lg transition hover:bg-blue-800 hover:text-white">
-            Visa Application
-          </router-link>
+
+    <!-- Content -->
+    <div class="relative z-10 h-full flex flex-col justify-center">
+      <div class="container mx-auto px-6 lg:px-8">
+        <div class="max-w-2xl">
+          <!-- Tagline -->
+          <div class="flex items-center mb-4">
+            <span class="inline-block w-12 h-1 bg-blue-400 mr-3"></span>
+            <span class="text-blue-300 font-medium tracking-wider">YOUR JOURNEY BEGINS HERE</span>
+          </div>
+
+          <!-- Main Heading -->
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+            Discover <span class="text-blue-300">The World</span> With Confidence
+          </h1>
+
+          <!-- Subheading -->
+          <p class="text-lg md:text-xl text-blue-100 mb-8 max-w-lg">
+            We curate unforgettable travel experiences with seamless visa assistance, luxury stays, and personalized
+            itineraries tailored just for you.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="flex flex-wrap lg:mb-8 gap-4">
+            <router-link to="/"
+              class="flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+              <i class="fas fa-map-marked-alt mr-3"></i>
+              Explore Destinations
+            </router-link>
+
+            <router-link to="/documents"
+              class="flex items-center px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 font-semibold rounded-lg transition-all duration-300">
+              <i class="fas fa-passport mr-3"></i>
+              Visa Assistance
+            </router-link>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrolling Indicator -->
+      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#services" class="text-white">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-800/90 to-indigo-900/90 backdrop-blur-sm">
+      <div class="container mx-auto px-6 py-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <div class="text-2xl md:text-3xl font-bold text-white">50+</div>
+            <div class="text-sm text-blue-200 uppercase tracking-wider">Destinations</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl md:text-3xl font-bold text-white">10K+</div>
+            <div class="text-sm text-blue-200 uppercase tracking-wider">Happy Travelers</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl md:text-3xl font-bold text-white">24/7</div>
+            <div class="text-sm text-blue-200 uppercase tracking-wider">Support</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl md:text-3xl font-bold text-white">100%</div>
+            <div class="text-sm text-blue-200 uppercase tracking-wider">Visa Success</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Flight Search Section (shown only when Flights tab is active) -->
+  <div v-if="activeCategory === 'Flights'" class="flight-search-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header with decorative elements -->
+        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
+          <div class="absolute top-0 right-0 opacity-20">
+            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 12l8 10 8-10-8-10z" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">Find Your Perfect Flight</span>
+          </h2>
+          <p class="mt-3 max-w-2xl text-lg text-blue-100">
+            Compare prices across hundreds of airlines to get the best deal
+          </p>
+        </div>
+
+        <!-- Search Form with floating labels -->
+        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
+          <form @submit.prevent="searchFlights" class="mt-8 space-y-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <!-- Origin Input -->
+              <div class="relative">
+                <label for="origin"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  From
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-plane-departure text-blue-300"></i>
+                  </div>
+                  <input v-model="origin" id="origin" type="text" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="City or Airport" />
+                </div>
+              </div>
+
+              <!-- Destination Input -->
+              <div class="relative">
+                <label for="destination"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  To
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-plane-arrival text-blue-300"></i>
+                  </div>
+                  <input v-model="destination" id="destination" type="text" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="City or Airport" />
+                </div>
+              </div>
+
+              <!-- Date Picker -->
+              <div class="relative">
+                <label for="departDate"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Departure
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="far fa-calendar-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="departDate" id="departDate" type="date" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
+                </div>
+              </div>
+
+              <!-- Search Button -->
+              <div class="flex items-end">
+                <button type="submit"
+                  class="w-full h-full bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
+                  <i class="fas fa-search mr-2"></i>
+                  Search Flights
+                </button>
+              </div>
+            </div>
+
+            <!-- Advanced Options Toggle -->
+            <div class="pt-2">
+              <button type="button" class="text-blue-200 hover:text-white text-sm font-medium flex items-center">
+                <span>Advanced options</span>
+                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Search Bar Section -->
-  <div class="relative py-8 bg-gray-50 px-4 md:px-16">
-    <div class="absolute top-0 right-0 w-1/2 h-full hidden md:block">
-      <img :src="geometricUrlImage" alt="Elite Explorers" class="w-full h-full object-cover opacity-50" />
-    </div>
-    <div class="relative z-10 text-center mb-6 text-black">
-      <h1 class="text-2xl md:text-4xl mb-2 font-bold">
-        Explore Destinations, Activities and Experiences
-      </h1>
-      <p>Your travel agency of choice</p>
-    </div>
-    <div class="relative z-10 max-w-3xl mx-auto flex items-center space-x-4">
-      <input v-model="searchQuery" type="text" placeholder="Search for hotels, destinations..."
-        class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600" />
-      <button
-        class="bg-transparent border-2 border-black text-indigo-600 py-2 px-6 rounded-lg flex items-center space-x-2 transition-colors hover:bg-indigo-600 hover:text-white">
-        <i class="fas fa-search"></i>
-        <span>Search</span>
-      </button>
-    </div>
-    <div v-if="filteredServices.length === 0" class="text-center text-lg font-semibold text-red-600 mt-4">
-      No results found for "{{ searchQuery }}".
+  <!-- Normal Services Search Section (shown for other categories) -->
+  <div v-else class="services-search-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="px-6 py-8 sm:p-10">
+          <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              Discover Amazing Experiences
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+              Find hotels, activities, and more for your perfect getaway
+            </p>
+          </div>
+
+          <div class="mt-8">
+            <div class="relative max-w-2xl mx-auto">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+              </div>
+              <input v-model="searchQuery" type="text"
+                class="block w-full pl-10 pr-12 py-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 placeholder-gray-400"
+                placeholder="Search for hotels, destinations, activities..." />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                <button type="button"
+                  class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  Search
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+              <button v-for="category in ['Hotels', 'Tours', 'Restaurants', 'Car Rentals']" :key="category"
+                @click="activeCategory = category"
+                class="px-4 py-2 border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
+                {{ category }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
   <!-- Featured Services Section -->
-  <section class="py-16 relative bg-gray-200">
-    <!-- Background Geometric Image -->
-    <div class="absolute top-0 right-0 w-full h-full hidden md:block">
-      <img :src="geometricUrlImage" alt="Elite Explorers" class="w-full h-full object-cover opacity-50" />
+  <section class="py-16 relative bg-gradient-to-b from-gray-50 to-gray-100">
+    <!-- Decorative Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute top-0 right-0 w-1/3 h-full">
+        <div class="absolute inset-0 bg-gradient-to-l from-blue-100/20 to-transparent"></div>
+        <div class="absolute inset-0 opacity-10"
+          style="background-image: url(@/assets/images/pattern.svg); background-size: 30px 30px;"></div>
+      </div>
     </div>
-    <div class="max-w-6xl mx-auto px-2 relative z-10">
-      <h2 class="text-2xl font-bold mb-4">
-        {{ route.query.category ? route.query.category : 'All Services' }}
-      </h2>
-      <p class="text-md mb-6">Explore the most luxurious services and destinations we offer.</p>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <!-- Section Header -->
+      <div class="text-center mb-12">
+        <span class="inline-block px-3 py-1 text-sm font-semibold text-blue-600 bg-blue-100 rounded-full mb-4">
+          {{ activeCategory || 'Premium Selection' }}
+        </span>
+        <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          Curated Travel Experiences
+        </h2>
+        <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">
+          Discover handpicked services that redefine luxury travel
+        </p>
+      </div>
+
+      <!-- Services Grid -->
       <div v-if="paginatedServices.length > 0">
-        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           <router-link v-for="service in paginatedServices" :key="service.id" :to="`/services/${service.id}`"
-            class="block bg-white shadow-md rounded-lg p-4 hover:shadow-md transition duration-300">
-            <div v-if="service.image" class="mb-4">
-              <img :src="service.image" alt="Service Image" class="w-full h-56 object-contain rounded-md" />
-            </div>
-            <h2 class="text-xl font-semibold">{{ service.title }}</h2>
-            <p class="text-green-600 font-semibold">Provider: {{ service.provider }}</p>
-            <p class="text-black">Price: USD {{ service.price }}</p>
-            <div class="flex justify-between items-center">
-              <p :class="[
-                'px-2 py-1 rounded-full text-white text-sm inline-flex items-center',
-                service.available ? 'bg-green-500' : 'bg-red-500'
+            class="group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <!-- Image with overlay -->
+            <div class="relative h-60 overflow-hidden">
+              <img :src="service.image" :alt="service.title"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+
+              <!-- Availability Badge -->
+              <span :class="[
+                'absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold',
+                service.available ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
               ]">
-                {{ service.available ? 'Available' : 'Not Available' }}
+                {{ service.available ? 'Available' : 'Sold Out' }}
+              </span>
+
+              <!-- Quick View Button -->
+              <button
+                class="absolute bottom-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-blue-600 px-4 py-2 rounded-full shadow-md font-medium"
+                @click.prevent="quickView(service)">
+                Quick View
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5">
+              <div class="flex justify-between items-start">
+                <h3 class="text-lg font-bold text-gray-900 line-clamp-2">
+                  {{ service.title }}
+                </h3>
+                <div class="flex items-center bg-blue-50 px-2 py-1 rounded">
+                  <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
+                  <span class="text-sm font-bold text-gray-700">{{ service.rating }}</span>
+                </div>
+              </div>
+
+              <p class="mt-1 text-sm text-gray-500 flex items-center">
+                <i class="fas fa-building text-gray-400 mr-2 text-xs"></i>
+                {{ service.provider }}
               </p>
-              <div class="flex items-center space-x-1 text-yellow-400">
-                <i v-for="n in 5" :key="n" class="fas"
-                  :class="n <= service.rating ? 'fa-star' : 'fa-star-half-alt'"></i>
+
+              <div class="mt-4 flex justify-between items-center">
+                <div>
+                  <span class="text-lg font-bold text-blue-600">${{ service.price }}</span>
+                  <span class="text-xs text-gray-500 ml-1">USD</span>
+                </div>
+
+                <div class="flex space-x-1">
+                  <i v-for="n in 5" :key="n" class="fas text-sm" :class="{
+                    'fa-star text-yellow-400': n <= service.rating,
+                    'fa-star text-gray-300': n > service.rating
+                  }"></i>
+                </div>
+              </div>
+
+              <!-- Additional Info (hidden until hover) -->
+              <div
+                class="mt-3 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div class="flex justify-between text-xs text-gray-500">
+                  <span class="flex items-center">
+                    <i class="fas fa-map-marker-alt mr-1"></i>
+                    {{ service.location || 'Multiple locations' }}
+                  </span>
+                  <span class="flex items-center">
+                    <i class="far fa-clock mr-1"></i>
+                    {{ service.duration || 'Flexible' }}
+                  </span>
+                </div>
               </div>
             </div>
           </router-link>
         </div>
       </div>
-      <div v-else class="text-center text-gray-500">
-        No featured services available.
+
+      <!-- Empty State -->
+      <div v-else class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400">
+          <i class="fas fa-compass text-6xl"></i>
+        </div>
+        <h3 class="mt-4 text-lg font-medium text-gray-900">No services found</h3>
+        <p class="mt-1 text-gray-500">
+          We couldn't find any services matching your criteria.
+        </p>
+        <div class="mt-6">
+          <button @click="resetFilters"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-redo mr-2"></i>
+            Reset Filters
+          </button>
+        </div>
       </div>
 
-      <!-- Pagination Controls Positioned on Top of Background -->
-      <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center items-center space-x-2 pointer-events-auto">
-        <button @click="changePage(1)" :disabled="currentPage === 1"
-          class="pagination-button bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-          title="First page">&laquo;</button>
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-          class="pagination-button bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-          title="Previous page">&lsaquo;</button>
-        <template v-for="page in visiblePages" :key="page">
-          <button @click="changePage(page)"
-            :class="['pagination-button', page === currentPage ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white', 'py-2 px-3 rounded', 'transition-colors', 'hover:bg-green-600', 'cursor-pointer']">
-            {{ page }}
-          </button>
-        </template>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-          class="pagination-button bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-          title="Next page">&rsaquo;</button>
-        <button @click="changePage(totalPages)" :disabled="currentPage === totalPages"
-          class="pagination-button bg-blue-500 text-white py-2 px-3 rounded disabled:opacity-50 transition-colors hover:bg-green-600 cursor-pointer"
-          title="Last page">&raquo;</button>
-      </div>
-      <!-- Pagination Info -->
-      <div class="relative z-10 mt-20 text-center">
-        <span class="text-sm text-gray-600 block">
-          Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{
-            Math.min(currentPage * itemsPerPage, filteredServices.length)
-          }} of {{ filteredServices.length }} items
-        </span>
-      </div>
-      <!-- Display pagination error if any -->
-      <div v-if="paginationError" class="relative z-10 text-red-500 text-center mt-4">
-        {{ paginationError }}
+      <!-- Pagination -->
+      <div class="mt-12 flex items-center justify-between">
+        <div class="sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
+              <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, categoryFilteredServices.length)
+              }}</span> of
+              <span class="font-medium">{{ categoryFilteredServices.length }}</span> results
+            </p>
+          </div>
+
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <button @click="changePage(1)" :disabled="currentPage === 1"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                :class="{ 'cursor-not-allowed': currentPage === 1 }">
+                <span class="sr-only">First</span>
+                <i class="fas fa-angle-double-left"></i>
+              </button>
+              <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                :class="{ 'cursor-not-allowed': currentPage === 1 }">
+                <span class="sr-only">Previous</span>
+                <i class="fas fa-angle-left"></i>
+              </button>
+
+              <template v-for="page in visiblePages" :key="page">
+                <button @click="changePage(page)" :aria-current="page === currentPage ? 'page' : undefined"
+                  class="relative inline-flex items-center px-4 py-2 border text-sm font-medium" :class="{
+                    'z-10 bg-blue-50 border-blue-500 text-blue-600': page === currentPage,
+                    'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': page !== currentPage
+                  }">
+                  {{ page }}
+                </button>
+              </template>
+
+              <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                :class="{ 'cursor-not-allowed': currentPage === totalPages }">
+                <span class="sr-only">Next</span>
+                <i class="fas fa-angle-right"></i>
+              </button>
+              <button @click="changePage(totalPages)" :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                :class="{ 'cursor-not-allowed': currentPage === totalPages }">
+                <span class="sr-only">Last</span>
+                <i class="fas fa-angle-double-right"></i>
+              </button>
+            </nav>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <TheFooter />
 </template>
+<style>
+.animate-zoom-in-out {
+  animation: zoom-in-out 20s ease-in-out infinite alternate;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes zoom-in-out {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-20px);
+  }
+
+  60% {
+    transform: translateY(-10px);
+  }
+}
+</style>

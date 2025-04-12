@@ -22,6 +22,40 @@ const toggleAccordion = (index) => {
   activeAccordion.value = activeAccordion.value === index ? null : index;
 };
 
+const submitForm = () => {
+  const { name, email, phone, service, message, country, urgency } = formData.value;
+
+  const formattedMessage =
+    `*${service} Service*\n\n` + // Service title in bold
+    `*Client Info:*\n` +
+    `Name: ${name}\n` +
+    `Phone: ${phone}\n` +
+    `Email: ${email}\n` +
+    `Country: ${country}\n` +
+    `Urgency: ${urgency}\n\n` +
+    `*Message:*\n${message || 'No additional message.'}\n\n` +
+    `👉 Apply here: https://afroartsafary.com/visa`;
+
+  const whatsappURL = `https://wa.me/254731727411?text=${encodeURIComponent(formattedMessage)}`;
+  window.open(whatsappURL, '_blank');
+
+  // Reset form and close modal after submission
+  submitted.value = true;
+  setTimeout(() => {
+    showModal.value = false;
+    submitted.value = false;
+    formData.value = {
+      name: '',
+      email: '',
+      phone: '',
+      service: formData.value.service,
+      message: '',
+      country: '',
+      urgency: 'standard'
+    };
+  }, 3000);
+};
+
 const services = {
   visa: [
     {
@@ -156,25 +190,6 @@ const stats = [
 const openModal = (service) => {
   formData.value.service = service;
   showModal.value = true;
-};
-
-const submitForm = () => {
-  // Here you would typically send the form data to your backend
-  console.log('Form submitted:', formData.value);
-  submitted.value = true;
-  setTimeout(() => {
-    showModal.value = false;
-    submitted.value = false;
-    formData.value = {
-      name: '',
-      email: '',
-      phone: '',
-      service: formData.value.service, // Keep the service preselected
-      message: '',
-      country: '',
-      urgency: 'standard'
-    };
-  }, 3000);
 };
 
 const nextTestimonial = () => {

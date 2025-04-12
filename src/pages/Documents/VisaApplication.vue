@@ -72,29 +72,32 @@ const handleFileUpload = (event, field) => {
 };
 
 const submitApplication = () => {
-  // Validate all required fields before submission
   if (!validateForm()) return;
 
-  const message = `Visa Application:\n\n` +
-    `Personal Information:\n` +
-    `Name: ${form.value.name}\n` +
-    `Gender: ${form.value.gender}\n` +
-    `Date of Birth: ${form.value.dob}\n` +
-    `Passport No: ${form.value.passportNumber}\n` +
-    `Nationality: ${form.value.nationality}\n\n` +
+  const message =
+    `🛂 *Visa Application Assistance*\n\n` +
 
-    `Contact Information:\n` +
-    `Phone: ${form.value.phone}\n` +
-    `Email: ${form.value.email}\n` +
-    `Address: ${form.value.address}, ${form.value.city}, ${form.value.country}\n\n` +
+    `👤 *Personal Information*\n` +
+    `• Name: ${form.value.name}\n` +
+    `• Gender: ${form.value.gender}\n` +
+    `• Date of Birth: ${form.value.dob}\n` +
+    `• Passport No: ${form.value.passportNumber}\n` +
+    `• Nationality: ${form.value.nationality}\n\n` +
 
-    `Travel Information:\n` +
-    `Visa Type: ${form.value.visaType}\n` +
-    `Purpose: ${form.value.visitPurpose}\n` +
-    `Arrival: ${form.value.intendedArrivalDate}\n` +
-    `Departure: ${form.value.intendedDepartureDate}\n\n` +
+    `📞 *Contact Information*\n` +
+    `• Phone: ${form.value.phone}\n` +
+    `• Email: ${form.value.email}\n` +
+    `• Address: ${form.value.address}, ${form.value.city}, ${form.value.country}\n\n` +
 
-    `Additional Notes:\n${form.value.notes}`;
+    `✈️ *Travel Information*\n` +
+    `• Visa Type: ${form.value.visaType}\n` +
+    `• Purpose: ${form.value.visitPurpose}\n` +
+    `• Arrival: ${form.value.intendedArrivalDate}\n` +
+    `• Departure: ${form.value.intendedDepartureDate}\n\n` +
+
+    `📝 *Additional Notes*\n${form.value.notes}\n\n` +
+
+    `🔗 *View Full Form*: https://afroartsafary.com/visa`;
 
   const whatsappURL = `https://wa.me/254731727411?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, '_blank');
@@ -113,7 +116,7 @@ const validateForm = () => {
       <!-- Progress Bar -->
       <div class="mb-8">
         <div class="flex justify-between mb-2">
-          <h2 class="text-2xl font-bold text-gray-800">Visa Application</h2>
+          <h2 class="text-2xl font-bold text-gray-800">Visa Application Assistance</h2>
           <span class="text-sm font-medium text-gray-600">Step {{ currentStep }} of {{ totalSteps }}</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">

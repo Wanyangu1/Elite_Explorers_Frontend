@@ -14,6 +14,14 @@ const {
   submitBooking,
 } = useBooking();
 
+const airlines = [
+  'Qatar Airways', 'Emirates', 'Turkish Airlines', 'Kenya Airways',
+  'British Airways', 'Ethiopian Airlines', 'Lufthansa', 'Air France',
+  'United Airlines', 'Delta Air Lines', 'American Airlines',
+  'Singapore Airlines', 'Etihad Airways', 'South African Airways'
+];
+
+
 const sendToWhatsApp = () => {
   const phoneNumber = "+15207361677";
   const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
@@ -70,9 +78,11 @@ const handleBooking = async () => {
 
 <template>
   <TheNavbar />
-  <LifeLine />
 
   <div class="min-h-screen bg-gray-50">
+    <div class="mt-4">
+      <LifeLine />
+    </div>
     <!-- Success Message -->
     <div v-if="successMessage" class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
       <div class="max-w-6xl mx-auto flex items-center">
@@ -309,6 +319,7 @@ const handleBooking = async () => {
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Travel Class -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Travel Class *</label>
                   <select v-model="customerDetails.travel_class" required
@@ -320,10 +331,17 @@ const handleBooking = async () => {
                     <option>First Class</option>
                   </select>
                 </div>
+
+                <!-- Preferred Airline -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Airline</label>
-                  <input v-model="customerDetails.airline" type="text"
+                  <select v-model="customerDetails.airline"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Airline</option>
+                    <option v-for="airline in airlines" :key="airline" :value="airline">
+                      {{ airline }}
+                    </option>
+                  </select>
                 </div>
               </div>
 
@@ -338,67 +356,6 @@ const handleBooking = async () => {
                   class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                   <span v-if="!isSubmitting">
                     <i class="fas fa-paper-plane mr-2"></i> Confirm Flight Booking
-                  </span>
-                  <span v-else class="flex items-center">
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
-                      fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                      </path>
-                    </svg>
-                    Processing...
-                  </span>
-                </button>
-              </div>
-            </form>
-
-            <!-- Visa/Green Card Form -->
-            <form v-else-if="['Visa Application', 'Green Card', 'Travel Documents'].includes(bookingDetails.category)"
-              @submit.prevent="handleBooking" class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                  <input v-model="customerDetails.name" type="text" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Passport Number *</label>
-                  <input v-model="customerDetails.passport_number" type="text" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nationality *</label>
-                  <input v-model="customerDetails.nationality" type="text" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                  <input v-model="customerDetails.email" type="email" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                <input v-model="customerDetails.phone" type="tel" required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose of Travel / Notes</label>
-                <textarea v-model="customerDetails.notes" rows="3"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-              </div>
-
-              <div class="pt-4">
-                <button type="submit" :disabled="isSubmitting"
-                  class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                  <span v-if="!isSubmitting">
-                    <i class="fab fa-whatsapp mr-2"></i> Confirm Booking & Send via WhatsApp
                   </span>
                   <span v-else class="flex items-center">
                     <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
@@ -432,6 +389,18 @@ const handleBooking = async () => {
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
                 <input v-model="customerDetails.phone" type="tel" required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date & Time</label>
+                <input v-model="customerDetails.preferredDate" type="datetime-local"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <!-- Location (if applicable) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Location (if applicable)</label>
+                <input v-model="customerDetails.location" type="text"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               </div>
 
@@ -470,7 +439,6 @@ const handleBooking = async () => {
 </template>
 
 <style scoped>
-/* Custom styles for better form experience */
 input,
 select,
 textarea {
