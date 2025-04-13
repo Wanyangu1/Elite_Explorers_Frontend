@@ -152,10 +152,10 @@ const navLinks = [
             </div>
           </template>
           <template v-else>
-            <router-link to="/login" class="block px-4 py-3 rounded-lg bg-white/10 text-white text-center">
+            <router-link to="/login" class="block px-4 py-2 rounded-lg bg-white/10 text-white text-center">
               Login
             </router-link>
-            <router-link to="/signup" class="block px-4 py-3 rounded-lg bg-white text-blue-600 text-center">
+            <router-link to="/signup" class="block px-4 py-2 rounded-lg bg-white text-blue-600 text-center">
               Sign Up
             </router-link>
           </template>

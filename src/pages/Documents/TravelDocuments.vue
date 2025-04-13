@@ -233,10 +233,12 @@ setInterval(() => {
       </div>
 
       <div class="flex flex-wrap justify-center gap-4 mt-8">
-        <button @click="openModal('Visa Consultation')"
-          class="px-8 py-3 rounded-full bg-white text-blue-900 font-medium border-2 border-white hover:bg-blue-900 hover:text-white transition-all duration-300">
-          Free Eligibility Check
-        </button>
+        <router-link to="/greencard">
+          <button
+            class="px-8 py-3 rounded-full bg-transparent text-white font-medium border-2 border-white hover:bg-white hover:text-blue-900 transition-all duration-300">
+            GreenCard
+          </button>
+        </router-link>
         <router-link to="/visa">
           <button
             class="px-8 py-3 rounded-full bg-transparent text-white font-medium border-2 border-white hover:bg-white hover:text-blue-900 transition-all duration-300">

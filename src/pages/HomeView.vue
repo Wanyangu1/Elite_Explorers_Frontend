@@ -90,6 +90,23 @@ const searchFlights = () => {
 
   window.open(tripUrl, '_blank');
 };
+// 🔍 Hotel Search Logic
+const hotelDestination = ref('');
+const checkInDate = ref('');
+const checkOutDate = ref('');
+const rooms = ref(1);
+const adults = ref(2);
+const children = ref(0);
+
+const searchHotels = () => {
+  const destination = encodeURIComponent(hotelDestination.value);
+  const checkIn = checkInDate.value;
+  const checkOut = checkOutDate.value;
+
+  const tripUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=https%3A%2F%2Fus.trip.com%2Fhotels%2Flist%3Fcity%3D0%26checkIn%3D${checkIn}%26checkOut%3D${checkOut}%26barCurr%3DUSD%26searchType%3DA%26searchWord%3D${destination}%26crn%3D${rooms.value}%26adult%3D${adults.value}%26children%3D${children.value}&campaign_id=121`;
+
+  window.open(tripUrl, '_blank');
+};
 </script>
 
 <template>
@@ -127,10 +144,10 @@ const searchFlights = () => {
 
           <!-- CTA Buttons -->
           <div class="flex flex-wrap lg:mb-8 gap-4">
-            <router-link to="/"
+            <router-link to="/greencard"
               class="flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
               <i class="fas fa-map-marked-alt mr-3"></i>
-              Explore Destinations
+              GreenCard
             </router-link>
 
             <router-link to="/documents"
@@ -268,7 +285,129 @@ const searchFlights = () => {
       </div>
     </div>
   </div>
+  <!-- Hotel Search Section (shown only when Hotels tab is active) -->
+  <div v-else-if="activeCategory === 'Stays'" class="hotel-search-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+        <!-- Header with decorative elements -->
+        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
+          <div class="absolute top-0 right-0 opacity-20">
+            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 12l8 10 8-10-8-10z" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">Find Your Perfect Hotel</span>
+          </h2>
+          <p class="mt-3 max-w-2xl text-lg text-blue-100">
+            Compare prices across thousands of hotels to get the best deal
+          </p>
+        </div>
 
+        <!-- Search Form with floating labels -->
+        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
+          <form @submit.prevent="searchHotels" class="mt-8 space-y-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <!-- Destination Input -->
+              <div class="relative">
+                <label for="hotelDestination"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Destination
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-map-marker-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="hotelDestination" id="hotelDestination" type="text" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="City, hotel, or area" />
+                </div>
+              </div>
+
+              <!-- Check-in Date -->
+              <div class="relative">
+                <label for="checkInDate"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Check-in
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="far fa-calendar-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="checkInDate" id="checkInDate" type="date" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
+                </div>
+              </div>
+
+              <!-- Check-out Date -->
+              <div class="relative">
+                <label for="checkOutDate"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Check-out
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="far fa-calendar-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="checkOutDate" id="checkOutDate" type="date" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
+                </div>
+              </div>
+
+              <!-- Guests and Rooms -->
+              <div class="relative">
+                <label class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Guests & Rooms
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-users text-blue-300"></i>
+                  </div>
+                  <select v-model="rooms"
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none">
+                    <option value="1">1 Room</option>
+                    <option value="2">2 Rooms</option>
+                    <option value="3">3 Rooms</option>
+                    <option value="4">4 Rooms</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guest Details (hidden by default) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div class="relative">
+                <label class="block text-sm font-medium text-blue-200 mb-1">Adults</label>
+                <select v-model="adults"
+                  class="block w-full pl-3 pr-3 py-2 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg">
+                  <option v-for="n in 10" :key="'adult-' + n" :value="n">
+                    {{ n }} {{ n === 1 ? 'Adult' : 'Adults' }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="relative">
+                <label class="block text-sm font-medium text-blue-200 mb-1">Children</label>
+                <select v-model="children"
+                  class="block w-full pl-3 pr-3 py-2 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg">
+                  <option v-for="n in 10" :key="'child-' + n" :value="n">
+                    {{ n }} {{ n === 1 ? 'Child' : 'Children' }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex items-end">
+                <button type="submit"
+                  class="w-full h-full bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
+                  <i class="fas fa-search mr-2"></i>
+                  Search Hotels
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Normal Services Search Section (shown for other categories) -->
   <div v-else class="services-search-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -439,7 +578,7 @@ const searchFlights = () => {
             <p class="text-sm text-gray-700">
               Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
               <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, categoryFilteredServices.length)
-              }}</span> of
+                }}</span> of
               <span class="font-medium">{{ categoryFilteredServices.length }}</span> results
             </p>
           </div>
