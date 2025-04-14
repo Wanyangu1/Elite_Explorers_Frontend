@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import axiosInstance from '@/axiosconfig/axiosInstance'
 import useLogout from '@/composables/useLogout'
 
@@ -25,7 +25,26 @@ onMounted(() => {
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 10
 }
+const dropdownOpen = ref(false)
+const dropdownRef = ref(null)
 
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+const handleClickOutside = (e) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target)) {
+    dropdownOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 const navLinks = [
   { name: 'All Services', icon: 'fas fa-cogs', category: '' },
   { name: 'Hotels', icon: 'fas fa-bed', category: 'Stays' },
@@ -45,7 +64,7 @@ const navLinks = [
       <div class="flex justify-between items-center">
         <!-- Logo -->
         <router-link to="/" class="flex items-center space-x-2">
-          <img src="@/assets/images/logo3.png" class="h-10" alt="MiteExplorers Logo" />
+          <img src="@/assets/images/logo4.png" class="h-10" alt="MiteExplorers Logo" />
           <span class="text-xl font-bold text-white hidden sm:inline">MiteExplorers</span>
         </router-link>
 
@@ -73,14 +92,23 @@ const navLinks = [
 
           <!-- User Authentication Links -->
           <template v-if="user">
-            <div class="relative group">
-              <button class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition">
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+            <div class="relative" ref="dropdownRef">
+              <button @click="toggleDropdown"
+                class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition text-white">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
                   {{ user.name.charAt(0).toUpperCase() }}
                 </div>
-                <span class="text-white">{{ user.name }}</span>
+                <span>{{ user.name }}</span>
+                <!-- Chevron -->
+                <svg :class="[
+                  'w-4 h-4 transition-transform duration-300',
+                  dropdownOpen ? 'rotate-180' : ''
+                ]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
-              <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+
+              <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                 <router-link to="/profile" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
                   My Profile
                 </router-link>

@@ -99,7 +99,7 @@ const submitApplication = () => {
 
     `🔗 *View Full Form*: https://afroartsafary.com/visa`;
 
-  const whatsappURL = `https://wa.me/254731727411?text=${encodeURIComponent(message)}`;
+  const whatsappURL = `https://wa.me/15207361677?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, '_blank');
 };
 

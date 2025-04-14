@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import TheNavbar from '@/components/TheNavbar.vue';
 import TheFooter from '@/components/TheFooter.vue';
@@ -8,52 +8,67 @@ import bgImage from '@/assets/images/staycation/bg.png';
 
 const bgImageUrl = bgImage;
 
+// Services data
 const { searchQuery, filteredServices } = useServices();
 const route = useRoute();
 
+// Widget states
+const isWidgetLoading = ref(false);
+const widgetError = ref(false);
+const isHotelWidgetLoading = ref(false);
+const hotelWidgetError = ref(false);
+
+// Active category from route
 const activeCategory = computed(() => route.query.category || '');
+
+// Filter services by category
 const categoryFilteredServices = computed(() => {
   if (!activeCategory.value) return filteredServices.value;
   return filteredServices.value.filter(service =>
     service.category?.toLowerCase() === activeCategory.value.toLowerCase()
   );
 });
+
+// Quick view function
 const quickView = (service) => {
   const serviceId = service.id;
   window.open(`/services/${serviceId}`, '_blank');
-  console.log('Quick view:', service);
 };
+
+// Reset filters
 const resetFilters = () => {
-  // Implement filter reset logic
   searchQuery.value = '';
   activeCategory.value = '';
   currentPage.value = 1;
 };
+
 // Pagination configuration
 const itemsPerPage = 8;
 const currentPage = ref(1);
 const paginationError = ref('');
 
-// Watch search query to reset pagination
+// Watch for search query changes
 watch(searchQuery, () => {
   currentPage.value = 1;
 });
 
-// Watch route changes to reset pagination
+// Watch for route changes
 watch(route, () => {
   currentPage.value = 1;
 });
 
-// Paginate services
+// Paginated services
 const paginatedServices = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return categoryFilteredServices.value.slice(start, start + itemsPerPage);
 });
 
+// Total pages calculation
 const totalPages = computed(() => {
   return Math.ceil(categoryFilteredServices.value.length / itemsPerPage);
 });
 
+// Visible pages for pagination
 const visiblePages = computed(() => {
   const range = 2;
   const start = Math.max(1, currentPage.value - range);
@@ -61,6 +76,7 @@ const visiblePages = computed(() => {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
+// Change page function
 const changePage = (newPage) => {
   newPage = Math.max(1, Math.min(newPage, totalPages.value));
   if (newPage !== currentPage.value) {
@@ -71,42 +87,119 @@ const changePage = (newPage) => {
   }
 };
 
+// Widget loading function
+const loadWidget = (type) => {
+  // Set loading state
+  if (type === 'flights') {
+    isWidgetLoading.value = true;
+    widgetError.value = false;
+  } else {
+    isHotelWidgetLoading.value = true;
+    hotelWidgetError.value = false;
+  }
+
+  // Clear previous widget if it exists
+  const containerId = type === 'flights' ? 'widget-container' : 'travelpayouts-widget';
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.innerHTML = '';
+  }
+
+  // Create new script element
+  const script = document.createElement('script');
+  script.src = type === 'flights'
+    ? "https://tp.media/content?trs=406741&shmarker=622454&locale=en&curr=USD&powered_by=true&border_radius=0&plain=true&color_button=%232681ff&color_button_text=%23ffffff&color_border=%232681ff&promo_id=4132&campaign_id=121"
+    : "https://c121.travelpayouts.com/content?trs=406741&shmarker=622454&lang=www&layout=S10391&powered_by=true&promo_id=4038";
+
+  script.async = true;
+  script.charset = "utf-8";
+
+  // Handle successful load
+  script.onload = () => {
+    if (type === 'flights') {
+      isWidgetLoading.value = false;
+    } else {
+      isHotelWidgetLoading.value = false;
+    }
+  };
+
+  // Handle load error
+  script.onerror = () => {
+    if (type === 'flights') {
+      isWidgetLoading.value = false;
+      widgetError.value = true;
+    } else {
+      isHotelWidgetLoading.value = false;
+      hotelWidgetError.value = true;
+    }
+  };
+
+  // Append script to container
+  document.getElementById(containerId).appendChild(script);
+};
+
+// Watch for category changes and load appropriate widget
+watch(activeCategory, (newVal) => {
+  nextTick(() => {
+    if (newVal === 'Flights') {
+      loadWidget('flights');
+    } else if (newVal === 'Stays') {
+      loadWidget('hotels');
+    }
+  });
+}, { immediate: true });
+
+// Car Rental Search Logic
+const pickupLocation = ref('');
+const dropoffLocation = ref('');
+const pickupDate = ref('');
+const dropoffDate = ref('');
+
+const searchCarRentals = () => {
+  if (!pickupLocation.value || !pickupDate.value || !dropoffDate.value) {
+    alert('Please fill in all required fields');
+    return;
+  }
+
+  const pickup = encodeURIComponent(pickupLocation.value);
+  const dropoff = encodeURIComponent(dropoffLocation.value || pickupLocation.value);
+  const pickupDateFormatted = encodeURIComponent(pickupDate.value);
+  const dropoffDateFormatted = encodeURIComponent(dropoffDate.value);
+
+  const baseUrl = `https://us.trip.com/carhire/online/list?pcity=825&pcityName=${pickup}&pcode=NBO&ptype=1&plat=-1.32271&plon=36.926069&paddress=${pickup}%20(NBO)&ptimezone=3&rcity=825&rcityName=${dropoff}&rcode=NBO&rtype=1&rlat=-1.32271&rlon=36.926069&raddress=${dropoff}%20(NBO)&rtimezone=3&ptime=${pickupDateFormatted}%2010:00&rtime=${dropoffDateFormatted}%2010:00&scountry=54&age=30-60&channelid=235728`;
+  const affiliateUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=${encodeURIComponent(baseUrl)}&campaign_id=121`;
+
+  window.open(affiliateUrl, '_blank');
+};
+
+// Attractions Search Logic
+const attractionsLocation = ref('');
+const attractionsSearchTerm = ref('');
+
+const setPopularSearch = (location, term) => {
+  attractionsLocation.value = location;
+  attractionsSearchTerm.value = term;
+};
+
+const searchAttractions = () => {
+  if (!attractionsLocation.value) {
+    alert('Please specify a destination');
+    return;
+  }
+
+  const location = encodeURIComponent(attractionsLocation.value);
+  const searchTerm = encodeURIComponent(attractionsSearchTerm.value || attractionsLocation.value);
+
+  const baseUrl = `https://us.trip.com/things-to-do/list?pagetype=city&keyword=${searchTerm}&id=100087&name=${location}&pshowcode=&kwdfrom=srch&citytype=dt&locale=en-US&curr=USD`;
+  const affiliateUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=${encodeURIComponent(baseUrl)}&campaign_id=121`;
+
+  window.open(affiliateUrl, '_blank');
+};
+
+// Initialize on mount
 onMounted(() => {
   console.log('HomeView mounted');
 });
-
-// 🔍 Flight Search Logic
-const origin = ref('');
-const destination = ref('');
-const departDate = ref('');
-
-
-const searchFlights = () => {
-  const originCode = origin.value.toLowerCase();
-  const destinationCode = destination.value.toLowerCase();
-  const formattedDate = departDate.value;
-
-  const tripUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=https%3A%2F%2Fus.trip.com%2Fflights%2Fshowfarefirst%3Fdcity%3D${originCode}%26acity%3D${destinationCode}%26ddate%3D${formattedDate}%26triptype%3Dow%26class%3Dy%26quantity%3D1%26searchboxarg%3Dt%26nonstoponly%3Doff%26locale%3Den-US%26curr%3DUSD&campaign_id=121`;
-
-  window.open(tripUrl, '_blank');
-};
-// 🔍 Hotel Search Logic
-const hotelDestination = ref('');
-const checkInDate = ref('');
-const checkOutDate = ref('');
-const rooms = ref(1);
-const adults = ref(2);
-const children = ref(0);
-
-const searchHotels = () => {
-  const destination = encodeURIComponent(hotelDestination.value);
-  const checkIn = checkInDate.value;
-  const checkOut = checkOutDate.value;
-
-  const tripUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=https%3A%2F%2Fus.trip.com%2Fhotels%2Flist%3Fcity%3D0%26checkIn%3D${checkIn}%26checkOut%3D${checkOut}%26barCurr%3DUSD%26searchType%3DA%26searchWord%3D${destination}%26crn%3D${rooms.value}%26adult%3D${adults.value}%26children%3D${children.value}&campaign_id=121`;
-
-  window.open(tripUrl, '_blank');
-};
 </script>
 
 <template>
@@ -144,7 +237,7 @@ const searchHotels = () => {
 
           <!-- CTA Buttons -->
           <div class="flex flex-wrap lg:mb-8 gap-4">
-            <router-link to="/greencard"
+            <router-link to="/documents"
               class="flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
               <i class="fas fa-map-marked-alt mr-3"></i>
               GreenCard
@@ -193,11 +286,11 @@ const searchHotels = () => {
       </div>
     </div>
   </div>
-  <!-- Flight Search Section (shown only when Flights tab is active) -->
+
+  <!-- Flight Search Section -->
   <div v-if="activeCategory === 'Flights'" class="flight-search-section">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <!-- Header with decorative elements -->
         <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
           <div class="absolute top-0 right-0 opacity-20">
             <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -212,84 +305,50 @@ const searchHotels = () => {
           </p>
         </div>
 
-        <!-- Search Form with floating labels -->
-        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
-          <form @submit.prevent="searchFlights" class="mt-8 space-y-6">
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <!-- Origin Input -->
-              <div class="relative">
-                <label for="origin"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  From
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-plane-departure text-blue-300"></i>
-                  </div>
-                  <input v-model="origin" id="origin" type="text" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="City or Airport" />
-                </div>
-              </div>
-
-              <!-- Destination Input -->
-              <div class="relative">
-                <label for="destination"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  To
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-plane-arrival text-blue-300"></i>
-                  </div>
-                  <input v-model="destination" id="destination" type="text" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="City or Airport" />
-                </div>
-              </div>
-
-              <!-- Date Picker -->
-              <div class="relative">
-                <label for="departDate"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Departure
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="far fa-calendar-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="departDate" id="departDate" type="date" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
-                </div>
-              </div>
-
-              <!-- Search Button -->
-              <div class="flex items-end">
-                <button type="submit"
-                  class="w-full h-full bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
-                  <i class="fas fa-search mr-2"></i>
-                  Search Flights
-                </button>
-              </div>
+        <div class="px-6 pb-8 sm:px-8 sm:pb-10 relative min-h-[300px]">
+          <!-- Loading State -->
+          <div v-if="isWidgetLoading"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 backdrop-blur-sm rounded-b-2xl z-10">
+            <div class="w-16 h-16 border-4 border-blue-300 border-t-white rounded-full animate-spin mb-4"></div>
+            <h3 class="text-xl font-semibold text-white mb-2">Loading Flight Options</h3>
+            <p class="text-blue-100 max-w-md text-center">
+              Searching thousands of flights to find the best deals for you...
+            </p>
+            <div class="w-full max-w-xs bg-blue-700/30 rounded-full h-2 mt-6 overflow-hidden">
+              <div class="bg-gradient-to-r from-blue-300 to-indigo-400 h-2 rounded-full animate-progress"></div>
             </div>
+          </div>
 
-            <!-- Advanced Options Toggle -->
-            <div class="pt-2">
-              <button type="button" class="text-blue-200 hover:text-white text-sm font-medium flex items-center">
-                <span>Advanced options</span>
-                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+          <!-- Error State -->
+          <div v-if="widgetError"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-red-500/10 backdrop-blur-sm rounded-b-2xl z-10 p-6">
+            <div class="bg-white/90 p-6 rounded-xl max-w-md text-center">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">Unable to Load Flight Search</h3>
+              <p class="text-gray-600 mb-4">We're having trouble loading the flight search widget.</p>
+              <button @click="loadWidget('flights')"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Retry
               </button>
             </div>
-          </form>
+          </div>
+
+          <!-- Widget Container -->
+          <div id="widget-container" class="relative z-0"></div>
         </div>
       </div>
     </div>
   </div>
-  <!-- Hotel Search Section (shown only when Hotels tab is active) -->
+
+  <!-- Hotel Search Section -->
   <div v-else-if="activeCategory === 'Stays'" class="hotel-search-section">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <!-- Header with decorative elements -->
         <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
           <div class="absolute top-0 right-0 opacity-20">
             <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -304,102 +363,226 @@ const searchHotels = () => {
           </p>
         </div>
 
-        <!-- Search Form with floating labels -->
+        <div class="px-6 pb-8 sm:px-8 sm:pb-10 relative min-h-[300px]">
+          <!-- Loading State -->
+          <div v-if="isHotelWidgetLoading"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 backdrop-blur-sm rounded-b-2xl z-10">
+            <div class="w-16 h-16 border-4 border-blue-300 border-t-white rounded-full animate-spin mb-4"></div>
+            <h3 class="text-xl font-semibold text-white mb-2">Loading Hotel Options</h3>
+            <p class="text-blue-100 max-w-md text-center">
+              Searching thousands of hotels to find the best deals for you...
+            </p>
+            <div class="w-full max-w-xs bg-blue-700/30 rounded-full h-2 mt-6 overflow-hidden">
+              <div class="bg-gradient-to-r from-blue-300 to-indigo-400 h-2 rounded-full animate-progress"></div>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div v-if="hotelWidgetError"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-red-500/10 backdrop-blur-sm rounded-b-2xl z-10 p-6">
+            <div class="bg-white/90 p-6 rounded-xl max-w-md text-center">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">Unable to Load Hotel Search</h3>
+              <p class="text-gray-600 mb-4">We're having trouble loading the hotel search widget.</p>
+              <button @click="loadWidget('hotels')"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- Widget Container -->
+          <div id="travelpayouts-widget" class="relative z-0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Rental Search Section -->
+  <div v-else-if="activeCategory === 'Car Rentals'" class="car-rental-search-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
+          <div class="absolute top-0 right-0 opacity-20">
+            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 12l8 10 8-10-8-10z" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">Find Your Perfect Rental Car</span>
+          </h2>
+          <p class="mt-3 max-w-2xl text-lg text-blue-100">
+            Compare prices across hundreds of car rental companies
+          </p>
+        </div>
+
         <div class="px-6 pb-8 sm:px-8 sm:pb-10">
-          <form @submit.prevent="searchHotels" class="mt-8 space-y-6">
+          <form @submit.prevent="searchCarRentals" class="mt-8 space-y-6">
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <!-- Destination Input -->
+              <!-- Pickup Location Input -->
               <div class="relative">
-                <label for="hotelDestination"
+                <label for="pickupLocation"
                   class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Destination
+                  Pickup Location
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fas fa-map-marker-alt text-blue-300"></i>
                   </div>
-                  <input v-model="hotelDestination" id="hotelDestination" type="text" required
+                  <input v-model="pickupLocation" id="pickupLocation" type="text" required
                     class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="City, hotel, or area" />
+                    placeholder="City or Airport" />
                 </div>
               </div>
 
-              <!-- Check-in Date -->
+              <!-- Dropoff Location Input -->
               <div class="relative">
-                <label for="checkInDate"
+                <label for="dropoffLocation"
                   class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Check-in
+                  Dropoff Location
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-map-marker-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="dropoffLocation" id="dropoffLocation" type="text"
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="Same as pickup (optional)" />
+                </div>
+              </div>
+
+              <!-- Pickup Date -->
+              <div class="relative">
+                <label for="pickupDate"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Pickup Date
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="far fa-calendar-alt text-blue-300"></i>
                   </div>
-                  <input v-model="checkInDate" id="checkInDate" type="date" required
+                  <input v-model="pickupDate" id="pickupDate" type="date" required
                     class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
                 </div>
               </div>
 
-              <!-- Check-out Date -->
+              <!-- Dropoff Date -->
               <div class="relative">
-                <label for="checkOutDate"
+                <label for="dropoffDate"
                   class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Check-out
+                  Dropoff Date
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="far fa-calendar-alt text-blue-300"></i>
                   </div>
-                  <input v-model="checkOutDate" id="checkOutDate" type="date" required
+                  <input v-model="dropoffDate" id="dropoffDate" type="date" required
                     class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
-                </div>
-              </div>
-
-              <!-- Guests and Rooms -->
-              <div class="relative">
-                <label class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Guests & Rooms
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-users text-blue-300"></i>
-                  </div>
-                  <select v-model="rooms"
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none">
-                    <option value="1">1 Room</option>
-                    <option value="2">2 Rooms</option>
-                    <option value="3">3 Rooms</option>
-                    <option value="4">4 Rooms</option>
-                  </select>
                 </div>
               </div>
             </div>
 
-            <!-- Guest Details (hidden by default) -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div class="relative">
-                <label class="block text-sm font-medium text-blue-200 mb-1">Adults</label>
-                <select v-model="adults"
-                  class="block w-full pl-3 pr-3 py-2 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg">
-                  <option v-for="n in 10" :key="'adult-' + n" :value="n">
-                    {{ n }} {{ n === 1 ? 'Adult' : 'Adults' }}
-                  </option>
-                </select>
+            <!-- Search Button -->
+            <div class="pt-2 flex justify-center">
+              <button type="submit"
+                class="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
+                <i class="fas fa-car mr-2"></i>
+                Search Rental Cars
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attractions Search Section -->
+  <div v-else-if="activeCategory === 'Attractions'" class="attractions-search-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
+          <div class="absolute top-0 right-0 opacity-20">
+            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 12l8 10 8-10-8-10z" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">Discover Amazing Attractions</span>
+          </h2>
+          <p class="mt-3 max-w-2xl text-lg text-blue-100">
+            Find the best tours, activities and experiences for your trip
+          </p>
+        </div>
+
+        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
+          <form @submit.prevent="searchAttractions" class="mt-8 space-y-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <!-- Location Input -->
+              <div class="relative col-span-2">
+                <label for="attractionsLocation"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Destination (Country/City)
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-map-marker-alt text-blue-300"></i>
+                  </div>
+                  <input v-model="attractionsLocation" id="attractionsLocation" type="text" required
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="Enter country or city (e.g., Kenya)" />
+                </div>
               </div>
 
-              <div class="relative">
-                <label class="block text-sm font-medium text-blue-200 mb-1">Children</label>
-                <select v-model="children"
-                  class="block w-full pl-3 pr-3 py-2 border border-blue-500 bg-blue-500/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg">
-                  <option v-for="n in 10" :key="'child-' + n" :value="n">
-                    {{ n }} {{ n === 1 ? 'Child' : 'Children' }}
-                  </option>
-                </select>
+              <!-- Activity Search Input -->
+              <div class="relative col-span-2">
+                <label for="attractionsSearchTerm"
+                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
+                  Activity or Attraction
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-blue-300"></i>
+                  </div>
+                  <input v-model="attractionsSearchTerm" id="attractionsSearchTerm" type="text"
+                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
+                    placeholder="Search for specific activities (e.g., Maasai Mara)" />
+                </div>
               </div>
-              <div class="flex items-end">
-                <button type="submit"
-                  class="w-full h-full bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
-                  <i class="fas fa-search mr-2"></i>
-                  Search Hotels
+            </div>
+
+            <!-- Search Button -->
+            <div class="pt-2 flex justify-center">
+              <button type="submit"
+                class="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
+                <i class="fas fa-binoculars mr-2"></i>
+                Find Attractions
+              </button>
+            </div>
+
+            <!-- Popular Searches -->
+            <div class="pt-4">
+              <p class="text-sm text-blue-200 text-center mb-2">Popular searches:</p>
+              <div class="flex flex-wrap justify-center gap-2">
+                <button type="button" @click="setPopularSearch('Kenya', 'Maasai Mara')"
+                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
+                  Maasai Mara, Kenya
+                </button>
+                <button type="button" @click="setPopularSearch('France', 'Eiffel Tower')"
+                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
+                  Eiffel Tower, France
+                </button>
+                <button type="button" @click="setPopularSearch('USA', 'Grand Canyon')"
+                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
+                  Grand Canyon, USA
+                </button>
+                <button type="button" @click="setPopularSearch('Egypt', 'Pyramids')"
+                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
+                  Pyramids, Egypt
                 </button>
               </div>
             </div>
@@ -408,7 +591,8 @@ const searchHotels = () => {
       </div>
     </div>
   </div>
-  <!-- Normal Services Search Section (shown for other categories) -->
+
+  <!-- Normal Services Search Section -->
   <div v-else class="services-search-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -440,7 +624,7 @@ const searchHotels = () => {
 
             <!-- Quick Filters -->
             <div class="mt-6 flex flex-wrap justify-center gap-3">
-              <button v-for="category in ['Hotels', 'Tours', 'Restaurants', 'Car Rentals']" :key="category"
+              <button v-for="category in ['Flights', 'Stays', 'Car Rentals', 'Attractions']" :key="category"
                 @click="activeCategory = category"
                 class="px-4 py-2 border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
                 {{ category }}
@@ -451,9 +635,9 @@ const searchHotels = () => {
       </div>
     </div>
   </div>
+
   <!-- Featured Services Section -->
   <section class="py-16 relative bg-gradient-to-b from-gray-50 to-gray-100">
-    <!-- Decorative Elements -->
     <div class="absolute inset-0 overflow-hidden">
       <div class="absolute top-0 right-0 w-1/3 h-full">
         <div class="absolute inset-0 bg-gradient-to-l from-blue-100/20 to-transparent"></div>
@@ -534,7 +718,7 @@ const searchHotels = () => {
                 </div>
               </div>
 
-              <!-- Additional Info (hidden until hover) -->
+              <!-- Additional Info -->
               <div
                 class="mt-3 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div class="flex justify-between text-xs text-gray-500">
@@ -578,7 +762,7 @@ const searchHotels = () => {
             <p class="text-sm text-gray-700">
               Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
               <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, categoryFilteredServices.length)
-                }}</span> of
+              }}</span> of
               <span class="font-medium">{{ categoryFilteredServices.length }}</span> results
             </p>
           </div>
@@ -629,6 +813,7 @@ const searchHotels = () => {
 
   <TheFooter />
 </template>
+
 <style>
 .animate-zoom-in-out {
   animation: zoom-in-out 20s ease-in-out infinite alternate;

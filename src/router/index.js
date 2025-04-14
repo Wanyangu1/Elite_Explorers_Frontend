@@ -9,6 +9,7 @@ import HelpPage from '@/pages/services/HelpPage.vue'
 import TravelDocuments from '@/pages/Documents/TravelDocuments.vue'
 import VisaApplication from '@/pages/Documents/VisaApplication.vue'
 import GreenCard from '@/pages/Documents/GreenCard.vue'
+import ProfilePage from '@/pages/Registration/ProfilePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,7 +64,23 @@ const router = createRouter({
       name: 'greencard',
       component: GreenCard,
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfilePage,
+    },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ top: 0, behavior: 'smooth' })
+        }, 100) // small delay to ensure DOM is ready
+      })
+    }
+  },
 })
 
 export default router
