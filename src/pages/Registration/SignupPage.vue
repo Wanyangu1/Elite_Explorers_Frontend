@@ -2,8 +2,9 @@
 import useAuth from '@/composables/useAuth'
 import bgImage from '@/assets/images/staycation/bg.png';
 
-const { name, email, password, signup } = useAuth();
+const { name, email, password, signup, authError } = useAuth();
 </script>
+
 
 <template>
   <div class="flex min-h-screen bg-gray-100">
@@ -40,6 +41,10 @@ const { name, email, password, signup } = useAuth();
           <input v-model="password" type="password" id="password" placeholder="Enter your password"
             class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
             required />
+        </div>
+        <!-- Error Message -->
+        <div v-if="authError" class="w-full max-w-md mb-4 p-3 rounded bg-red-100 text-red-700 border border-red-400">
+          {{ authError }}
         </div>
 
         <button type="submit"

@@ -108,14 +108,20 @@ const navLinks = [
                 </svg>
               </button>
 
-              <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <router-link to="/profile" class="block px-4 py-2 text-gray-800 hover:bg-blue-50">
-                  My Profile
+              <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl z-50 py-2">
+                <router-link to="/profile"
+                  class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 transition-all duration-200">
+                  <i class="fas fa-user text-blue-500"></i>
+                  <span>My Profile</span>
                 </router-link>
-                <button @click="logout" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
-                  Logout
+
+                <button @click="logout"
+                  class="flex items-center gap-3 w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-all duration-200">
+                  <i class="fas fa-sign-out-alt text-red-500"></i>
+                  <span>Logout</span>
                 </button>
               </div>
+
             </div>
           </template>
           <template v-else>

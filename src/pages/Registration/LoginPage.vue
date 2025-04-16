@@ -1,9 +1,9 @@
 <script setup>
 import useAuth from '@/composables/useAuth'
-import bgImage from '@/assets/images/staycation/bg.png';
+import bgImage from '@/assets/images/staycation/bg.png'
 
-const bgImageUrl = bgImage;
-const { email, password, login } = useAuth()
+const bgImageUrl = bgImage
+const { email, password, login, errorMessage } = useAuth()
 </script>
 
 <template>
@@ -35,6 +35,11 @@ const { email, password, login } = useAuth()
           <input v-model="password" type="password" id="password" placeholder="Enter your password"
             class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
             required />
+        </div>
+
+        <!-- 🔴 Error message block -->
+        <div v-if="errorMessage" class="mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded-lg p-3">
+          {{ errorMessage }}
         </div>
 
         <button type="submit"

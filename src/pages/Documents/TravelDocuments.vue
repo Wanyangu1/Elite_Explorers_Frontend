@@ -285,6 +285,12 @@ setInterval(() => {
               Visa Services →
             </span>
           </router-link>
+          <router-link to="/travel-documents"
+            class="px-8 py-4 bg-gradient-to-r from-amber-400 to-amber-500 text-blue-900 font-bold rounded-lg hover:shadow-xl transition-all duration-300 group inline-block">
+            <span class="group-hover:translate-x-1 transition-transform duration-300">
+              Travel Documents →
+            </span>
+          </router-link>
         </div>
       </div>
     </div>

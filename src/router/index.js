@@ -10,6 +10,7 @@ import TravelDocuments from '@/pages/Documents/TravelDocuments.vue'
 import VisaApplication from '@/pages/Documents/VisaApplication.vue'
 import GreenCard from '@/pages/Documents/GreenCard.vue'
 import ProfilePage from '@/pages/Registration/ProfilePage.vue'
+import TravelDocumentsPage from '@/pages/Documents/TravelDocumentsPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+    },
+    {
+      path: '/travel-documents',
+      name: 'travel-documents',
+      component: TravelDocumentsPage,
     },
   ],
   scrollBehavior(to, from, savedPosition) {
