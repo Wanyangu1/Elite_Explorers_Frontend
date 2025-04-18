@@ -126,10 +126,11 @@ const navLinks = [
           </template>
           <template v-else>
             <router-link to="/login"
-              class="px-4 py-2 rounded-lg bg-white/0 border border-white text-white hover:bg-white hover:text-blue-600 transition">
+              class="px-4 py-1 rounded-lg bg-white/0 border border-white text-white hover:bg-white hover:text-blue-600 transition">
               Login
             </router-link>
-            <router-link to="/signup" class="px-4 py-2 rounded-lg bg-white text-blue-600 hover:bg-blue-50 transition">
+            <router-link to="/signup"
+              class="px-4 py-1 border  rounded-lg bg-white text-blue-600 hover:bg-blue-50 transition">
               Sign Up
             </router-link>
           </template>

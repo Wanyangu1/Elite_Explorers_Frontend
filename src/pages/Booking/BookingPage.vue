@@ -11,7 +11,7 @@ const {
   isSubmitting,
   error,
   successMessage,
-  submitBooking,
+  // submitBooking,
 } = useBooking();
 
 const airlines = [
@@ -21,55 +21,114 @@ const airlines = [
   'Singapore Airlines', 'Etihad Airways', 'South African Airways'
 ];
 
-
 const sendToWhatsApp = () => {
-  const phoneNumber = "+15207361677";
-  const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
-
-  let message = `Hello, I am inquiring about the following service:
-
-🔹 *Service Name:* ${bookingDetails.value.title}
-🔹 *Provider:* ${bookingDetails.value.provider}
-🔹 *Location:* ${bookingDetails.value.location}
-🔹 *Category:* ${bookingDetails.value.category}
-🔹 *Price:* $${bookingDetails.value.price}
-📌 *Service Link:* ${serviceLink}
-
-👤 *My Details:*
-- *Name:* ${customerDetails.value.name}
-- *Email:* ${customerDetails.value.email}
-- *Phone:* ${customerDetails.value.phone}`;
-
-  if (bookingDetails.value.category === "Stays" || bookingDetails.value.category === "Car Rentals") {
-    message += `
-- *Persons:* ${customerDetails.value.persons}
-- *Check-in:* ${customerDetails.value.check_in_date}
-- *Check-out:* ${customerDetails.value.check_out_date}`;
-  } else if (bookingDetails.value.category === "Flights") {
-    message += `
-- *From:* ${customerDetails.value.from_location}
-- *To:* ${customerDetails.value.to_location}
-- *Departure:* ${customerDetails.value.departure_date}
-- *Return:* ${customerDetails.value.return_date || "One-way flight"}`;
-  } else if (
-    ["Visa Application", "Green Card", "Travel Documents"].includes(bookingDetails.value.category)
-  ) {
-    message += `
-- *Passport Number:* ${customerDetails.value.passport_number}
-- *Nationality:* ${customerDetails.value.nationality}`;
+  // Validate required fields first
+  if (!validateForm()) {
+    return;
   }
 
-  message += `
+  const phoneNumber = "254731727411";
+  const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
 
-📝 *Special Notes:* ${customerDetails.value.notes || "None"}
-`;
+  // Base message structure
+  let message = `*New Booking Inquiry* 📅\n\n` +
+    `🔹 *Service:* ${bookingDetails.value.title}\n` +
+    `🔹 *Category:* ${bookingDetails.value.category}\n` +
+    `🔹 *Price:* $${bookingDetails.value.price}\n` +
+    `🔹 *Provider:* ${bookingDetails.value.provider}\n` +
+    `📍 *Location:* ${bookingDetails.value.location}\n\n` +
+    `*Customer Details*\n` +
+    `👤 *Name:* ${customerDetails.value.name}\n` +
+    `📧 *Email:* ${customerDetails.value.email}\n` +
+    `📱 *Phone:* ${customerDetails.value.phone}\n`;
 
-  const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-  window.open(whatsappURL, "_blank");
+  // Service-specific details
+  switch (bookingDetails.value.category) {
+    case 'Stays':
+    case 'Car Rentals':
+      message += `\n*Booking Details*\n` +
+        `👥 *Persons:* ${customerDetails.value.persons}\n` +
+        `🏨 *Check-in:* ${formatDate(customerDetails.value.check_in_date)}\n` +
+        `🏨 *Check-out:* ${formatDate(customerDetails.value.check_out_date)}\n`;
+      break;
+
+    case 'Flights':
+      message += `\n*Flight Details*\n` +
+        `✈️ *From:* ${customerDetails.value.from_location}\n` +
+        `✈️ *To:* ${customerDetails.value.to_location}\n` +
+        `📅 *Departure:* ${formatDate(customerDetails.value.departure_date)}\n` +
+        `📅 *Return:* ${customerDetails.value.return_date ? formatDate(customerDetails.value.return_date) : 'One-way'}\n` +
+        `🛫 *Class:* ${customerDetails.value.travel_class || 'Not specified'}\n` +
+        `✈️ *Airline:* ${customerDetails.value.airline || 'Any'}\n`;
+      break;
+
+    case 'Visa Application':
+    case 'Green Card':
+    case 'Travel Documents':
+      message += `\n*Document Details*\n` +
+        `📘 *Passport No:* ${customerDetails.value.passport_number}\n` +
+        `🌍 *Nationality:* ${customerDetails.value.nationality}\n`;
+      break;
+
+    default:
+      if (customerDetails.value.preferredDate) {
+        message += `\n*Preferred Date/Time:* ${formatDateTime(customerDetails.value.preferredDate)}\n`;
+      }
+      if (customerDetails.value.location) {
+        message += `📍 *Location:* ${customerDetails.value.location}\n`;
+      }
+  }
+
+  // Add notes if provided
+  if (customerDetails.value.notes) {
+    message += `\n*Additional Notes:*\n${customerDetails.value.notes}\n`;
+  }
+
+  // Add service link at the end
+  message += `\n🔗 *Service Link:* ${serviceLink}`;
+
+  // Encode and open WhatsApp
+  const encodedMessage = encodeURIComponent(message);
+  window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+};
+
+// Helper functions
+const validateForm = () => {
+  // Basic validation - expand as needed
+  if (!customerDetails.value.name || !customerDetails.value.email || !customerDetails.value.phone) {
+    error.value = "Please fill in all required fields";
+    return false;
+  }
+
+  // Service-specific validation
+  if (bookingDetails.value.category === 'Flights' && !customerDetails.value.departure_date) {
+    error.value = "Please select departure date";
+    return false;
+  }
+
+  return true;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not specified';
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const formatDateTime = (dateTimeString) => {
+  if (!dateTimeString) return 'Not specified';
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  return new Date(dateTimeString).toLocaleDateString(undefined, options);
 };
 
 const handleBooking = async () => {
-  await submitBooking();
+  // await submitBooking();
   if (!error.value) {
     sendToWhatsApp();
   }
@@ -413,9 +472,8 @@ const handleBooking = async () => {
               <div class="pt-4">
                 <button type="submit" :disabled="isSubmitting"
                   class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
-                  <span v-if="!isSubmitting">
-                    <i class="fab fa-whatsapp mr-2"></i> Confirm Booking & Send via WhatsApp
-                  </span>
+                  <span v-if="!isSubmitting"><i class="fab fa-whatsapp mr-2"></i>{{ bookingDetails.category ===
+                    'Flights' ? 'Book Flight via WhatsApp' : 'Confirm Booking via WhatsApp' }}</span>
                   <span v-else class="flex items-center">
                     <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
                       fill="none" viewBox="0 0 24 24">

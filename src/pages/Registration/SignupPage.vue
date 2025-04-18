@@ -23,7 +23,7 @@ const { name, email, password, signup, authError } = useAuth();
       <!-- Signup Form -->
       <form @submit.prevent="signup" class="w-full max-w-md p-2">
         <div class="mb-2">
-          <label for="name" class="block text-md font-medium text-gray-700">Full Name</label>
+          <label for="name" class="block text-md font-medium text-gray-700">User Name</label>
           <input v-model="name" type="text" id="name" placeholder="Enter your name"
             class="mt-1 block w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
             required />

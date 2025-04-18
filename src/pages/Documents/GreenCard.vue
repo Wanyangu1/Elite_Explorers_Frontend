@@ -176,7 +176,7 @@ const submitApplication = () => {
 
     `📝 *Additional Notes*\n${form.value.notes || 'None'}\n\n` +
 
-    `🔗 *View Full Form*: https://yourwebsite.com/greencard`;
+    `🔗 *View Full Form*: https://miteexplorers.com/greencard`;
 
   const whatsappURL = `https://wa.me/15207361677?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, '_blank');

@@ -55,7 +55,7 @@ const fetchProfile = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await axiosInstance.get('http://localhost:8000/api/profile/')
+    const response = await axiosInstance.get('/api/profile/')
     profile.value = response.data
     editableProfile.value = { ...profile.value }
   } catch (err) {
@@ -85,7 +85,7 @@ const updateProfile = async () => {
       return
     }
 
-    const response = await axiosInstance.patch('http://localhost:8000/api/profile/', editableProfile.value)
+    const response = await axiosInstance.patch('/api/profile/', editableProfile.value)
     profile.value = response.data
     editableProfile.value = { ...profile.value }
     success.value = true
@@ -124,7 +124,7 @@ const handleAvatarUpload = async (event) => {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const response = await axiosInstance.patch('http://localhost:8000/api/profile/', formData, {
+    const response = await axiosInstance.patch('/api/profile/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

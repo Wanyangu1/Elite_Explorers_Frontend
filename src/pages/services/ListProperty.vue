@@ -167,7 +167,7 @@ const submitToBackend = async () => {
 
 
     const response = await axiosInstance.post(
-      'http://localhost:8000/api/PropertyList/submit/PropertyToList/',
+      '/api/PropertyList/submit/PropertyToList/',
       formData,
       {
         headers: {
