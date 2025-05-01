@@ -196,6 +196,22 @@ const searchAttractions = () => {
   window.open(affiliateUrl, '_blank');
 };
 
+document.addEventListener('DOMContentLoaded', function () {
+  const widgetLoading = document.getElementById('widget-loading');
+  const widgetContent = document.getElementById('widget-content');
+
+  // This would normally be triggered by the widget's onload event
+  // For demonstration, we'll simulate it with a timeout
+  setTimeout(function () {
+    widgetLoading.style.display = 'none';
+    widgetContent.style.display = 'block';
+
+    // Here you would initialize your actual widget
+    // For example:
+    // new Widget().init();
+  }, 3000); // 3 second delay for demo
+});
+
 // Initialize on mount
 onMounted(() => {
   console.log('HomeView mounted');
@@ -283,6 +299,87 @@ onMounted(() => {
             <div class="text-sm text-blue-200 uppercase tracking-wider">Visa Success</div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="eg-affiliate-banners mt-4" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
+    data-image="beach" data-message="find-perfect-getaway-package" data-link="home" data-camref="1101l56HUy"
+    data-pubref=""></div>
+  <div class="travel-container relative">
+    <!-- Left Panel (Static Content) -->
+    <div class="travel-info-panel">
+      <h2>Plan Your Perfect Getaway</h2>
+      <div class="info-feature">
+        <svg class="info-icon" viewBox="0 0 24 24">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v2h-2zm1.61-9.96c.83.71 1.39 1.6 1.39 2.96h-2c0-.93-.48-1.36-1.02-1.72-.14-.09-.26-.17-.38-.26-.1-.08-.15-.12-.15-.16 0-.05.04-.1.15-.15.2-.12.45-.31.69-.58.36-.4.62-.93.62-1.57 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.26-.56 2.13-1.39 2.96z" />
+        </svg>
+        <div>
+          <h3>Best Price Guarantee</h3>
+          <p>We'll match any lower price you find with our partners.</p>
+        </div>
+      </div>
+
+      <div class="info-feature">
+        <svg class="info-icon" viewBox="0 0 24 24">
+          <path
+            d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z" />
+        </svg>
+        <div>
+          <h3>24/7 Support</h3>
+          <p>Our travel experts are available anytime to assist you.</p>
+        </div>
+      </div>
+
+      <div class="info-feature">
+        <svg class="info-icon" viewBox="0 0 24 24">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
+        <div>
+          <h3>Local Experiences</h3>
+          <p>Discover hidden gems and authentic activities worldwide.</p>
+        </div>
+      </div>
+
+      <div class="trust-badge">
+        <div class="rating">4.8/5</div>
+        <div class="rating-text">Trusted by 5M+ travelers annually</div>
+      </div>
+    </div>
+
+    <!-- Right Panel (Widget Area with Loading State) -->
+    <div class="widget-area relative">
+      <!-- Loading Overlay (shown by default, hidden when widget loads) -->
+      <div id="widget-loading"
+        class="widget-loading-overlay absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg">
+        <div class="loader-animation mb-6">
+          <div class="plane-wrapper">
+            <svg class="plane-icon animate-bounce" width="48" height="48" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22 16.21V12.05L18 14.28V10.11L14 12.31V8.05L10 10.22V5.96L3 9.2V14.8L10 18.03V13.77L14 15.94V11.68L18 13.88V9.71L22 11.94V7.79L12 3L2 7.79V11.94L6 9.71V13.88L10 11.68V15.94L14 13.77V18.03L21 14.8V9.2L14 5.96V10.22L10 8.05V12.31L6 10.11V14.28L2 12.05V16.21L12 21L22 16.21Z"
+                fill="#2563EB" />
+            </svg>
+          </div>
+        </div>
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Searching Travel Options</h3>
+        <p class="text-gray-600 max-w-md text-center mb-6">
+          We're scanning hundreds of providers to find the best deals...
+        </p>
+
+        <div class="w-full max-w-xs bg-gray-200 rounded-full h-2 overflow-hidden">
+          <div class="progress-bar bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full animate-progress">
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget Container (hidden by default, shown when loaded) -->
+      <div id="widget-content" class="widget-content mt-6" style="display: none;">
+        <div class="eg-widget" data-widget="search" data-program="us-expedia" data-lobs="stays,flights"
+          data-network="pz" data-camref="1101l56HUy" data-pubref="Clinton26@"></div>
       </div>
     </div>
   </div>
@@ -635,7 +732,103 @@ onMounted(() => {
       </div>
     </div>
   </div>
+  <div class="eg-affiliate-banners w-full" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
+    data-image="surfing" data-message="search-hotels-flights-cars-activities-more" data-link="home"
+    data-camref="1101l56HUy" data-pubref=""></div>
 
+  <!-- Add this section where appropriate in your template -->
+  <section class="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <!-- Image Grid -->
+          <div class="relative min-h-64 lg:min-h-96">
+            <div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-2 p-2">
+              <div class="relative rounded-lg overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                  alt="Happy traveler"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+              </div>
+              <div class="relative rounded-lg overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                  alt="Travel agent helping customer"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+              </div>
+              <div class="relative rounded-lg overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                  alt="Family traveling"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+              </div>
+              <div class="relative rounded-lg overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                  alt="Couple on vacation"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
+            <div class="flex items-center mb-4">
+              <span class="inline-block w-8 h-1 bg-blue-500 mr-2"></span>
+              <span class="text-blue-600 font-medium tracking-wider">PERSONALIZED ASSISTANCE</span>
+            </div>
+
+            <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl mb-4">
+              Need Help With Your Booking?
+            </h2>
+
+            <p class="text-lg text-gray-600 mb-6">
+              Our travel experts are here to make your trip planning effortless. Whether you need special arrangements,
+              have questions, or want personalized recommendations, we're ready to help.
+            </p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-start">
+                <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700">Personalized itinerary planning</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700">Special requests and accommodations</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-700">24/7 customer support</span>
+              </li>
+            </ul>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="/contact"
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg text-center">
+                <i class="fas fa-headset mr-2"></i> Contact Our Agent
+              </a>
+              <a href="/help"
+                class="px-6 py-3 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-all duration-300 text-center">
+                <i class="fas fa-question-circle mr-2"></i> Visit Help Center
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- Featured Services Section -->
   <section class="py-16 relative bg-gradient-to-b from-gray-50 to-gray-100">
     <div class="absolute inset-0 overflow-hidden">
@@ -819,6 +1012,101 @@ onMounted(() => {
   animation: zoom-in-out 20s ease-in-out infinite alternate;
 }
 
+.travel-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.travel-info-panel {
+  flex: 1;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+}
+
+.travel-search-panel {
+  flex: 1;
+  padding: 2rem;
+  background: white;
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.info-feature {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+  align-items: flex-start;
+}
+
+.info-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.trust-badge {
+  margin-top: 3rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.rating {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-text {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.elegant-search-widget {
+  min-height: 400px;
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .travel-container {
+    flex-direction: column;
+  }
+
+  .travel-info-panel {
+    padding: 1.5rem;
+  }
+
+  .travel-search-panel {
+    padding: 1.5rem;
+  }
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -855,6 +1143,84 @@ onMounted(() => {
 
   60% {
     transform: translateY(-10px);
+  }
+}
+
+/* Animation styles */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+
+  50% {
+    width: 100%;
+    transform: translateX(0%);
+  }
+
+  100% {
+    width: 0%;
+    transform: translateX(100%);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+.animate-progress {
+  animation: progress 2.5s linear infinite;
+}
+
+/* Layout styles */
+.travel-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.travel-info-panel {
+  flex: 1;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+}
+
+.widget-area {
+  flex: 1;
+  min-height: 400px;
+  /* Ensure consistent height */
+  position: relative;
+}
+
+.widget-content {
+  height: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .travel-container {
+    flex-direction: column;
+  }
+
+  .widget-area {
+    min-height: 300px;
   }
 }
 </style>

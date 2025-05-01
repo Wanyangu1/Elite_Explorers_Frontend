@@ -11,6 +11,7 @@ import VisaApplication from '@/pages/Documents/VisaApplication.vue'
 import GreenCard from '@/pages/Documents/GreenCard.vue'
 import ProfilePage from '@/pages/Registration/ProfilePage.vue'
 import TravelDocumentsPage from '@/pages/Documents/TravelDocumentsPage.vue'
+import ContactPage from '@/pages/Contact/ContactPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,6 +70,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: ContactPage,
     },
     {
       path: '/travel-documents',

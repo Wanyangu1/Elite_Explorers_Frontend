@@ -247,6 +247,115 @@ onMounted(() => {
           <p v-else class="text-gray-500 italic">No description provided for this service.</p>
         </div>
       </div>
+      <div class="eg-affiliate-banners" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
+        data-image="beach" data-message="search-hotels-flights-cars-activities-more" data-link="home"
+        data-camref="1101l56HUy" data-pubref=""></div>
+
+      <!-- Add this section before the related services or after the description -->
+      <section class="py-16 bg-gradient-to-b from-blue-50 to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <span class="inline-block px-4 py-1 text-sm font-semibold text-blue-600 bg-blue-100 rounded-full mb-4">
+              TRAVEL WITH CONFIDENCE
+            </span>
+            <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+              Why Book With Mite_Explorers?
+            </h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+              We go beyond bookings to deliver exceptional travel experiences
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Benefit 1 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Best Price Guarantee</h3>
+              <p class="text-gray-600">
+                Found a better price elsewhere? We'll match it and give you an additional 10% off.
+              </p>
+            </div>
+
+            <!-- Benefit 2 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-headset text-green-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
+              <p class="text-gray-600">
+                Our travel experts are available round-the-clock to assist you, wherever you are.
+              </p>
+            </div>
+
+            <!-- Benefit 3 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-file-invoice-dollar text-purple-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Flexible Cancellation</h3>
+              <p class="text-gray-600">
+                Most bookings can be canceled or changed for free up to 24 hours before.
+              </p>
+            </div>
+
+            <!-- Benefit 4 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-medal text-yellow-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Verified Quality</h3>
+              <p class="text-gray-600">
+                Every service is personally vetted by our team to ensure exceptional standards.
+              </p>
+            </div>
+          </div>
+
+          <!-- Testimonial -->
+          <div class="mt-16 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-8 sm:p-10 lg:p-12 flex flex-col lg:flex-row items-center">
+              <div class="lg:w-1/3 mb-8 lg:mb-0 lg:pr-8">
+                <div class="relative h-64 w-full rounded-lg overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                    alt="Happy customer" class="absolute inset-0 w-full h-full object-cover">
+                  <div class="absolute inset-0 bg-gradient-to-t from-blue-800/70 via-transparent to-transparent"></div>
+                  <div class="absolute bottom-4 left-4 text-white">
+                    <p class="font-bold">Sarah Johnson</p>
+                    <p class="text-sm opacity-90">New York, USA</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:w-2/3">
+                <div class="flex items-center text-yellow-400 mb-4">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <span class="ml-2 text-white text-sm">5.0 Rating</span>
+                </div>
+                <blockquote class="text-white text-lg sm:text-xl italic mb-6">
+                  "Booking through Mite_Explorers was seamless from start to finish. When our flight was delayed, their
+                  24/7 support team rearranged all our transfers and accommodations within an hour. This level of
+                  service is why we'll never book anywhere else!"
+                </blockquote>
+                <div class="flex items-center">
+                  <button
+                    class="px-6 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors mr-4">
+                    <i class="fas fa-play-circle mr-2"></i> Watch Video Testimonial
+                  </button>
+                  <button
+                    class="px-6 py-3 border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-colors">
+                    <i class="fas fa-book-open mr-2"></i> Read More Reviews
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- Related Services Section -->
       <div v-if="relatedServices.length > 0" class="related-services mt-16">
@@ -370,7 +479,6 @@ onMounted(() => {
 /* Line clamping for text */
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
