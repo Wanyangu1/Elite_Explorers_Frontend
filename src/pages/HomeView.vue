@@ -955,7 +955,7 @@ onMounted(() => {
             <p class="text-sm text-gray-700">
               Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
               <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, categoryFilteredServices.length)
-              }}</span> of
+                }}</span> of
               <span class="font-medium">{{ categoryFilteredServices.length }}</span> results
             </p>
           </div>
