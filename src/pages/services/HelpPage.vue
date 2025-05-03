@@ -175,7 +175,7 @@ function submitForm() {
               <h3 class="font-medium text-gray-800">Call Us</h3>
             </div>
             <p class="text-sm text-gray-600 mb-2">Prefer to talk to someone directly?</p>
-            <a href="tel:+254731727411" class="text-blue-600 font-medium">+152 073 616 77</a>
+            <a href="tel:+254731727411" class="text-blue-600 font-medium">+1 (623) 499-2271</a>
           </div>
 
           <div class="bg-white p-6 rounded-lg shadow-sm border">

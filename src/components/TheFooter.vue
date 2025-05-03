@@ -54,7 +54,7 @@
               <i class="fas fa-phone-alt text-blue-300 mt-1"></i>
               <div>
                 <p class="font-medium">Phone</p>
-                <a href="tel:+15207361677" class="text-blue-100 hover:text-white">+1 (520) 736-1677</a>
+                <a href="tel:+15207361677" class="text-blue-100 hover:text-white">+1 (623) 499-2271</a>
               </div>
             </li>
             <li class="flex items-start space-x-3">
@@ -62,7 +62,7 @@
               <div>
                 <p class="font-medium">Email</p>
                 <a href="mailto:davidirihose94@gmail.com"
-                  class="text-blue-100 hover:text-white">davidirihose94@gmail.com</a>
+                  class="text-blue-100 hover:text-white">miteexplorer@gmail.com</a>
               </div>
             </li>
             <li class="flex items-start space-x-3">
