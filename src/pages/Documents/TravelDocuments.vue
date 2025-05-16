@@ -191,7 +191,7 @@ const submitForm = () => {
     `*Additional Details:*\n${message || 'No additional message provided'}\n\n` +
     `🔗 Submitted via MiteExplorers Premium Portal`;
 
-  const whatsappURL = `https://wa.me/15207361677?text=${encodeURIComponent(formattedMessage)}`;
+  const whatsappURL = `https://wa.me/+16234992271?text=${encodeURIComponent(formattedMessage)}`;
   window.open(whatsappURL, '_blank');
 
   submitted.value = true;

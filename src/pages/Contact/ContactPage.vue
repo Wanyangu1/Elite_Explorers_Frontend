@@ -333,7 +333,7 @@
                     </div>
                     <div>
                       <p class="text-white font-medium">WhatsApp</p>
-                      <p class="text-blue-100 text-sm">+254 731 727 411</p>
+                      <p class="text-blue-100 text-sm">+1 (623) 499-2271</p>
                     </div>
                   </li>
                   <li class="flex items-center">
@@ -342,7 +342,7 @@
                     </div>
                     <div>
                       <p class="text-white font-medium">Email</p>
-                      <p class="text-blue-100 text-sm">bookings@miteexplorers.com</p>
+                      <p class="text-blue-100 text-sm">miteexplorers@gmail.com</p>
                     </div>
                   </li>
                   <li class="flex items-center">
@@ -351,7 +351,7 @@
                     </div>
                     <div>
                       <p class="text-white font-medium">Phone</p>
-                      <p class="text-blue-100 text-sm">+254 700 000 000</p>
+                      <p class="text-blue-100 text-sm">+1 (623) 499-2271</p>
                     </div>
                   </li>
                 </ul>
@@ -408,7 +408,7 @@ const submitToWhatsApp = () => {
 
   // Simulate processing delay
   setTimeout(() => {
-    const phoneNumber = '15207361677';
+    const phoneNumber = '+16234992271';
     const message = `*New Booking Assistance Request*\n\n` +
       `*Name:* ${form.value.name}\n` +
       `*Phone:* ${form.value.phone}\n` +

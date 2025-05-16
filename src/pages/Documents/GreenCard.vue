@@ -178,7 +178,7 @@ const submitApplication = () => {
 
     `🔗 *View Full Form*: https://miteexplorers.com/greencard`;
 
-  const whatsappURL = `https://wa.me/15207361677?text=${encodeURIComponent(message)}`;
+  const whatsappURL = `https://wa.me/+16234992271?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, '_blank');
 };
 

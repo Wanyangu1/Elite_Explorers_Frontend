@@ -27,7 +27,7 @@ const sendToWhatsApp = () => {
     return;
   }
 
-  const phoneNumber = "15207361677";
+  const phoneNumber = "+16234992271";
   const serviceLink = `https://afroartsafary.com/services/${bookingDetails.value.id}`;
 
   // Base message structure

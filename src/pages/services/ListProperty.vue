@@ -236,7 +236,7 @@ const submitToWhatsApp = async () => {
 
     // Encode the message for WhatsApp URL
     const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/15207361677?text=${encodedMessage}`
+    const whatsappUrl = `https://wa.me/+16234992271?text=${encodedMessage}`
 
     // Open WhatsApp in a new tab
     window.open(whatsappUrl, '_blank')
@@ -368,7 +368,7 @@ onMounted(() => {
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Your business name">
               <p v-if="errorMessages.business_name" class="mt-1 text-sm text-red-600">{{ errorMessages.business_name[0]
-              }}</p>
+                }}</p>
             </div>
 
             <!-- Description -->

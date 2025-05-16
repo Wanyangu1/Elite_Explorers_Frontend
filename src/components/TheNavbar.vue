@@ -65,7 +65,7 @@ const navLinks = [
         <!-- Logo -->
         <router-link to="/" class="flex items-center space-x-2">
           <img src="@/assets/images/logo4.png" class="h-10" alt="MiteExplorers Logo" />
-          <span class="text-xl font-bold text-white hidden sm:inline">MiteExplorers</span>
+          <span class="text-sm font-semibold text-white sm:text-2xl sm:font-semibold">MiteExplorers</span>
         </router-link>
 
         <!-- Desktop Navigation -->

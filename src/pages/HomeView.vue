@@ -105,16 +105,14 @@ const loadWidget = (type) => {
     container.innerHTML = '';
   }
 
-  // Create new script element
   const script = document.createElement('script');
   script.src = type === 'flights'
     ? "https://tp.media/content?trs=406741&shmarker=622454&locale=en&curr=USD&powered_by=true&border_radius=0&plain=true&color_button=%232681ff&color_button_text=%23ffffff&color_border=%232681ff&promo_id=4132&campaign_id=121"
-    : "https://c121.travelpayouts.com/content?trs=406741&shmarker=622454&lang=www&layout=S10391&powered_by=true&promo_id=4038";
+    : "https://c121.travelpayouts.com/content?trs=416883&shmarker=632067&lang=www&layout=S10391&powered_by=true&promo_id=4038";  // ✅ updated hotel script
 
   script.async = true;
   script.charset = "utf-8";
 
-  // Handle successful load
   script.onload = () => {
     if (type === 'flights') {
       isWidgetLoading.value = false;
@@ -122,6 +120,9 @@ const loadWidget = (type) => {
       isHotelWidgetLoading.value = false;
     }
   };
+
+  document.body.appendChild(script);
+
 
   // Handle load error
   script.onerror = () => {
@@ -195,21 +196,16 @@ const searchAttractions = () => {
 
   window.open(affiliateUrl, '_blank');
 };
-
-document.addEventListener('DOMContentLoaded', function () {
+onMounted(() => {
   const widgetLoading = document.getElementById('widget-loading');
   const widgetContent = document.getElementById('widget-content');
 
-  // This would normally be triggered by the widget's onload event
-  // For demonstration, we'll simulate it with a timeout
-  setTimeout(function () {
-    widgetLoading.style.display = 'none';
-    widgetContent.style.display = 'block';
-
-    // Here you would initialize your actual widget
-    // For example:
-    // new Widget().init();
-  }, 3000); // 3 second delay for demo
+  if (widgetLoading && widgetContent) {
+    setTimeout(() => {
+      widgetLoading.style.display = 'none';
+      widgetContent.style.display = 'block';
+    }, 3000);
+  }
 });
 
 // Initialize on mount
@@ -221,7 +217,7 @@ onMounted(() => {
 <template>
   <TheNavbar />
   <!-- Hero Section -->
-  <div class="relative h-screen min-h-[32rem]">
+  <div class="relative h-[90vh] min-h-[710px] lg:h-[90vh] lg:min-h-[600px] flex overflow-hidden">
     <!-- Background with parallax effect -->
     <div class="absolute inset-0 overflow-hidden">
       <img :src="bgImageUrl" alt="Travel the world with Mite_Explorers"
@@ -231,11 +227,11 @@ onMounted(() => {
     </div>
 
     <!-- Content -->
-    <div class="relative z-10 h-full flex flex-col justify-center">
+    <div class="relative z-10 h-full flex flex-col justify-start sm:justify-center pt-8 sm:pt-0">
       <div class="container mx-auto px-6 lg:px-8">
         <div class="max-w-2xl">
           <!-- Tagline -->
-          <div class="flex items-center mb-4">
+          <div class="flex items-center mt-8 lg:mt-0 mb-4">
             <span class="inline-block w-12 h-1 bg-blue-400 mr-3"></span>
             <span class="text-blue-300 font-medium tracking-wider">YOUR JOURNEY BEGINS HERE</span>
           </div>
@@ -304,7 +300,7 @@ onMounted(() => {
   </div>
 
   <div class="eg-affiliate-banners mt-4" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
-    data-image="beach" data-message="find-perfect-getaway-package" data-link="home" data-camref="1101l56HUy"
+    data-image="sailing" data-message="find-perfect-getaway-package" data-link="home" data-camref="1011l57Rko"
     data-pubref=""></div>
   <div class="travel-container relative">
     <!-- Left Panel (Static Content) -->
@@ -377,10 +373,8 @@ onMounted(() => {
       </div>
 
       <!-- Widget Container (hidden by default, shown when loaded) -->
-      <div id="widget-content" class="widget-content mt-6" style="display: none;">
-        <div class="eg-widget" data-widget="search" data-program="us-expedia" data-lobs="stays,flights"
-          data-network="pz" data-camref="1101l56HUy" data-pubref="Clinton26@"></div>
-      </div>
+      <div class="eg-widget" data-widget="search" data-program="us-expedia" data-lobs="stays,flights" data-network="pz"
+        data-camref="1011l57Rko"></div>
     </div>
   </div>
 
@@ -732,9 +726,9 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <div class="eg-affiliate-banners w-full" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
+  <div class="eg-affiliate-banners" data-program="us-expedia" data-network="pz" data-layout="leaderboard"
     data-image="surfing" data-message="search-hotels-flights-cars-activities-more" data-link="home"
-    data-camref="1101l56HUy" data-pubref=""></div>
+    data-camref="1011l57Rko" data-pubref=""></div>
 
   <!-- Add this section where appropriate in your template -->
   <section class="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -855,7 +849,7 @@ onMounted(() => {
 
       <!-- Services Grid -->
       <div v-if="paginatedServices.length > 0">
-        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           <router-link v-for="service in paginatedServices" :key="service.id" :to="`/services/${service.id}`"
             class="group relative bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
             <!-- Image with overlay -->
@@ -955,7 +949,7 @@ onMounted(() => {
             <p class="text-sm text-gray-700">
               Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span> to
               <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, categoryFilteredServices.length)
-                }}</span> of
+              }}</span> of
               <span class="font-medium">{{ categoryFilteredServices.length }}</span> results
             </p>
           </div>

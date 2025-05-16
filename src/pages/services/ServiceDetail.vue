@@ -344,7 +344,7 @@ onMounted(() => {
                 <div class="flex items-center">
                   <button
                     class="px-6 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors mr-4">
-                    <i class="fas fa-play-circle mr-2"></i> Watch Video Testimonial
+                    <i class="fas fa-play-circle mr-2"></i> Sarah Johnson, USA
                   </button>
                   <button
                     class="px-6 py-3 border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-colors">
@@ -408,7 +408,7 @@ onMounted(() => {
             Showing <span class="font-semibold">{{ (currentRelatedPage - 1) * relatedItemsPerPage + 1 }}</span>
             to <span class="font-semibold">{{ Math.min(currentRelatedPage * relatedItemsPerPage,
               relatedServices.length)
-            }}</span>
+              }}</span>
             of <span class="font-semibold">{{ relatedServices.length }}</span> results
           </div>
 
