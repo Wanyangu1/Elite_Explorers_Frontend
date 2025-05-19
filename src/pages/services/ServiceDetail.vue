@@ -408,7 +408,7 @@ onMounted(() => {
             Showing <span class="font-semibold">{{ (currentRelatedPage - 1) * relatedItemsPerPage + 1 }}</span>
             to <span class="font-semibold">{{ Math.min(currentRelatedPage * relatedItemsPerPage,
               relatedServices.length)
-              }}</span>
+            }}</span>
             of <span class="font-semibold">{{ relatedServices.length }}</span> results
           </div>
 
