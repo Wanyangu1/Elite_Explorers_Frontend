@@ -392,7 +392,7 @@ onMounted(() => {
                   </div>
                   <input v-model="phone" type="tel"
                     class="pl-8 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="254...">
+                    placeholder="1 (623) 499-2271">
                 </div>
                 <p v-if="errorMessages.phone" class="mt-1 text-sm text-red-600">{{ errorMessages.phone[0] }}</p>
               </div>

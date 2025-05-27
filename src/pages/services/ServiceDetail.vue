@@ -117,7 +117,7 @@ onMounted(() => {
           <!-- Main Image -->
           <div class="relative overflow-hidden rounded-xl shadow-lg bg-white">
             <div v-if="currentImage" class="aspect-w-16 aspect-h-9">
-              <img :src="`http://localhost:8000/media/${currentImage}`" alt="Service Image"
+              <img :src="`https://backend.miteexplorers.com/media/${currentImage}`" alt="Service Image"
                 class="w-full h-full object-cover transition-opacity duration-300"
                 :class="{ 'opacity-0': isLoading, 'opacity-100': !isLoading }" />
             </div>
@@ -141,7 +141,8 @@ onMounted(() => {
               'relative overflow-hidden rounded-lg border-2 transition-all duration-200 h-20',
               currentImage === image ? 'border-blue-500 ring-2 ring-blue-200' : 'border-transparent hover:border-gray-300'
             ]">
-              <img :src="`http://localhost:8000/media/${image}`" alt="Thumbnail" class="w-full h-full object-cover" />
+              <img :src="`https://backend.miteexplorers.com/media/${image}`" alt="Thumbnail"
+                class="w-full h-full object-cover" />
               <div v-if="currentImage === image" class="absolute inset-0 bg-blue-500/20"></div>
             </button>
           </div>
@@ -370,8 +371,8 @@ onMounted(() => {
           <router-link v-for="related in paginatedRelatedServices" :key="related.id" :to="`/services/${related.id}`"
             class="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
             <div class="relative overflow-hidden h-48">
-              <img v-if="related.images.length > 0" :src="`http://localhost:8000/media/${related.images[0]}`"
-                alt="Related Service"
+              <img v-if="related.images.length > 0"
+                :src="`https://backend.miteexplorers.com/media/${related.images[0]}`" alt="Related Service"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
                 <i class="fas fa-image text-gray-400 text-3xl"></i>

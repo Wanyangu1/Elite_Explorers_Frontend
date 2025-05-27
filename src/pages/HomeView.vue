@@ -17,6 +17,7 @@ const isWidgetLoading = ref(false);
 const widgetError = ref(false);
 const isHotelWidgetLoading = ref(false);
 const hotelWidgetError = ref(false);
+const widgetLoaded = ref(false);
 
 // Active category from route
 const activeCategory = computed(() => route.query.category || '');
@@ -97,6 +98,7 @@ const loadWidget = (type) => {
     isHotelWidgetLoading.value = true;
     hotelWidgetError.value = false;
   }
+  widgetLoaded.value = false;
 
   // Clear previous widget if it exists
   const containerId = type === 'flights' ? 'widget-container' : 'travelpayouts-widget';
@@ -108,7 +110,7 @@ const loadWidget = (type) => {
   const script = document.createElement('script');
   script.src = type === 'flights'
     ? "https://tp.media/content?trs=406741&shmarker=622454&locale=en&curr=USD&powered_by=true&border_radius=0&plain=true&color_button=%232681ff&color_button_text=%23ffffff&color_border=%232681ff&promo_id=4132&campaign_id=121"
-    : "https://c121.travelpayouts.com/content?trs=416883&shmarker=632067&lang=www&layout=S10391&powered_by=true&promo_id=4038";  // ✅ updated hotel script
+    : "https://c121.travelpayouts.com/content?trs=416883&shmarker=632067&lang=www&layout=S10391&powered_by=true&promo_id=4038";
 
   script.async = true;
   script.charset = "utf-8";
@@ -119,10 +121,10 @@ const loadWidget = (type) => {
     } else {
       isHotelWidgetLoading.value = false;
     }
+    widgetLoaded.value = true;
   };
 
   document.body.appendChild(script);
-
 
   // Handle load error
   script.onerror = () => {
@@ -133,6 +135,7 @@ const loadWidget = (type) => {
       isHotelWidgetLoading.value = false;
       hotelWidgetError.value = true;
     }
+    widgetLoaded.value = true;
   };
 
   // Append script to container
@@ -150,67 +153,21 @@ watch(activeCategory, (newVal) => {
   });
 }, { immediate: true });
 
-// Car Rental Search Logic
-const pickupLocation = ref('');
-const dropoffLocation = ref('');
-const pickupDate = ref('');
-const dropoffDate = ref('');
-
-const searchCarRentals = () => {
-  if (!pickupLocation.value || !pickupDate.value || !dropoffDate.value) {
-    alert('Please fill in all required fields');
-    return;
-  }
-
-  const pickup = encodeURIComponent(pickupLocation.value);
-  const dropoff = encodeURIComponent(dropoffLocation.value || pickupLocation.value);
-  const pickupDateFormatted = encodeURIComponent(pickupDate.value);
-  const dropoffDateFormatted = encodeURIComponent(dropoffDate.value);
-
-  const baseUrl = `https://us.trip.com/carhire/online/list?pcity=825&pcityName=${pickup}&pcode=NBO&ptype=1&plat=-1.32271&plon=36.926069&paddress=${pickup}%20(NBO)&ptimezone=3&rcity=825&rcityName=${dropoff}&rcode=NBO&rtype=1&rlat=-1.32271&rlon=36.926069&raddress=${dropoff}%20(NBO)&rtimezone=3&ptime=${pickupDateFormatted}%2010:00&rtime=${dropoffDateFormatted}%2010:00&scountry=54&age=30-60&channelid=235728`;
-  const affiliateUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=${encodeURIComponent(baseUrl)}&campaign_id=121`;
-
-  window.open(affiliateUrl, '_blank');
-};
-
-// Attractions Search Logic
-const attractionsLocation = ref('');
-const attractionsSearchTerm = ref('');
-
-const setPopularSearch = (location, term) => {
-  attractionsLocation.value = location;
-  attractionsSearchTerm.value = term;
-};
-
-const searchAttractions = () => {
-  if (!attractionsLocation.value) {
-    alert('Please specify a destination');
-    return;
-  }
-
-  const location = encodeURIComponent(attractionsLocation.value);
-  const searchTerm = encodeURIComponent(attractionsSearchTerm.value || attractionsLocation.value);
-
-  const baseUrl = `https://us.trip.com/things-to-do/list?pagetype=city&keyword=${searchTerm}&id=100087&name=${location}&pshowcode=&kwdfrom=srch&citytype=dt&locale=en-US&curr=USD`;
-  const affiliateUrl = `https://tp.media/r?marker=622454&trs=406741&p=8626&u=${encodeURIComponent(baseUrl)}&campaign_id=121`;
-
-  window.open(affiliateUrl, '_blank');
-};
+// Detect when widget is fully loaded
 onMounted(() => {
-  const widgetLoading = document.getElementById('widget-loading');
-  const widgetContent = document.getElementById('widget-content');
+  const checkWidgetLoaded = setInterval(() => {
+    const widgetIframe = document.querySelector('.eg-widget iframe');
+    if (widgetIframe) {
+      widgetLoaded.value = true;
+      clearInterval(checkWidgetLoaded);
+    }
+  }, 100);
 
-  if (widgetLoading && widgetContent) {
-    setTimeout(() => {
-      widgetLoading.style.display = 'none';
-      widgetContent.style.display = 'block';
-    }, 3000);
-  }
-});
-
-// Initialize on mount
-onMounted(() => {
-  console.log('HomeView mounted');
+  // Fallback timeout
+  setTimeout(() => {
+    clearInterval(checkWidgetLoaded);
+    widgetLoaded.value = true;
+  }, 10000);
 });
 </script>
 
@@ -347,344 +304,46 @@ onMounted(() => {
 
     <!-- Right Panel (Widget Area with Loading State) -->
     <div class="widget-area relative">
-      <!-- Loading Overlay (shown by default, hidden when widget loads) -->
-      <div id="widget-loading"
-        class="widget-loading-overlay absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg">
-        <div class="loader-animation mb-6">
-          <div class="plane-wrapper">
-            <svg class="plane-icon animate-bounce" width="48" height="48" viewBox="0 0 24 24" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M22 16.21V12.05L18 14.28V10.11L14 12.31V8.05L10 10.22V5.96L3 9.2V14.8L10 18.03V13.77L14 15.94V11.68L18 13.88V9.71L22 11.94V7.79L12 3L2 7.79V11.94L6 9.71V13.88L10 11.68V15.94L14 13.77V18.03L21 14.8V9.2L14 5.96V10.22L10 8.05V12.31L6 10.11V14.28L2 12.05V16.21L12 21L22 16.21Z"
-                fill="#2563EB" />
-            </svg>
+      <!-- Right Panel (Widget Area with Loading State) -->
+      <div class="widget-area relative">
+        <!-- Loading Overlay (shown when widget is loading) -->
+        <div id="widget-loading"
+          class="widget-loading-overlay absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg transition-opacity duration-300"
+          :class="{ 'opacity-0 pointer-events-none': widgetLoaded }">
+          <div class="loader-animation mb-6">
+            <div class="plane-wrapper">
+              <svg class="plane-icon animate-bounce" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M22 16.21V12.05L18 14.28V10.11L14 12.31V8.05L10 10.22V5.96L3 9.2V14.8L10 18.03V13.77L14 15.94V11.68L18 13.88V9.71L22 11.94V7.79L12 3L2 7.79V11.94L6 9.71V13.88L10 11.68V15.94L14 13.77V18.03L21 14.8V9.2L14 5.96V10.22L10 8.05V12.31L6 10.11V14.28L2 12.05V16.21L12 21L22 16.21Z"
+                  fill="#2563EB" />
+              </svg>
+            </div>
           </div>
-        </div>
 
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">Searching Travel Options</h3>
-        <p class="text-gray-600 max-w-md text-center mb-6">
-          We're scanning hundreds of providers to find the best deals...
-        </p>
-
-        <div class="w-full max-w-xs bg-gray-200 rounded-full h-2 overflow-hidden">
-          <div class="progress-bar bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full animate-progress">
-          </div>
-        </div>
-      </div>
-
-      <!-- Widget Container (hidden by default, shown when loaded) -->
-      <div class="eg-widget" data-widget="search" data-program="us-expedia" data-lobs="stays,flights" data-network="pz"
-        data-camref="1011l57Rko"></div>
-    </div>
-  </div>
-
-  <!-- Flight Search Section -->
-  <div v-if="activeCategory === 'Flights'" class="flight-search-section">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
-          <div class="absolute top-0 right-0 opacity-20">
-            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L4 12l8 10 8-10-8-10z" />
-            </svg>
-          </div>
-          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-            <span class="block">Find Your Perfect Flight</span>
-          </h2>
-          <p class="mt-3 max-w-2xl text-lg text-blue-100">
-            Compare prices across hundreds of airlines to get the best deal
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Searching Travel Options</h3>
+          <p class="text-gray-600 max-w-md text-center mb-6">
+            We're scanning hundreds of providers to find the best deals...
           </p>
-        </div>
 
-        <div class="px-6 pb-8 sm:px-8 sm:pb-10 relative min-h-[300px]">
-          <!-- Loading State -->
-          <div v-if="isWidgetLoading"
-            class="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 backdrop-blur-sm rounded-b-2xl z-10">
-            <div class="w-16 h-16 border-4 border-blue-300 border-t-white rounded-full animate-spin mb-4"></div>
-            <h3 class="text-xl font-semibold text-white mb-2">Loading Flight Options</h3>
-            <p class="text-blue-100 max-w-md text-center">
-              Searching thousands of flights to find the best deals for you...
-            </p>
-            <div class="w-full max-w-xs bg-blue-700/30 rounded-full h-2 mt-6 overflow-hidden">
-              <div class="bg-gradient-to-r from-blue-300 to-indigo-400 h-2 rounded-full animate-progress"></div>
+          <div class="w-full max-w-xs bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="progress-bar bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full animate-progress">
             </div>
           </div>
-
-          <!-- Error State -->
-          <div v-if="widgetError"
-            class="absolute inset-0 flex flex-col items-center justify-center bg-red-500/10 backdrop-blur-sm rounded-b-2xl z-10 p-6">
-            <div class="bg-white/90 p-6 rounded-xl max-w-md text-center">
-              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Unable to Load Flight Search</h3>
-              <p class="text-gray-600 mb-4">We're having trouble loading the flight search widget.</p>
-              <button @click="loadWidget('flights')"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Retry
-              </button>
-            </div>
-          </div>
-
-          <!-- Widget Container -->
-          <div id="widget-container" class="relative z-0"></div>
         </div>
+
+        <!-- Widget Container -->
+        <div class="eg-widget" data-widget="search" data-program="us-expedia" data-lobs="stays,flights"
+          data-network="pz" data-camref="1011l57Rko"></div>
       </div>
     </div>
+
   </div>
 
-  <!-- Hotel Search Section -->
-  <div v-else-if="activeCategory === 'Stays'" class="hotel-search-section">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
-          <div class="absolute top-0 right-0 opacity-20">
-            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L4 12l8 10 8-10-8-10z" />
-            </svg>
-          </div>
-          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-            <span class="block">Find Your Perfect Hotel</span>
-          </h2>
-          <p class="mt-3 max-w-2xl text-lg text-blue-100">
-            Compare prices across thousands of hotels to get the best deal
-          </p>
-        </div>
 
-        <div class="px-6 pb-8 sm:px-8 sm:pb-10 relative min-h-[300px]">
-          <!-- Loading State -->
-          <div v-if="isHotelWidgetLoading"
-            class="absolute inset-0 flex flex-col items-center justify-center bg-blue-600/10 backdrop-blur-sm rounded-b-2xl z-10">
-            <div class="w-16 h-16 border-4 border-blue-300 border-t-white rounded-full animate-spin mb-4"></div>
-            <h3 class="text-xl font-semibold text-white mb-2">Loading Hotel Options</h3>
-            <p class="text-blue-100 max-w-md text-center">
-              Searching thousands of hotels to find the best deals for you...
-            </p>
-            <div class="w-full max-w-xs bg-blue-700/30 rounded-full h-2 mt-6 overflow-hidden">
-              <div class="bg-gradient-to-r from-blue-300 to-indigo-400 h-2 rounded-full animate-progress"></div>
-            </div>
-          </div>
-
-          <!-- Error State -->
-          <div v-if="hotelWidgetError"
-            class="absolute inset-0 flex flex-col items-center justify-center bg-red-500/10 backdrop-blur-sm rounded-b-2xl z-10 p-6">
-            <div class="bg-white/90 p-6 rounded-xl max-w-md text-center">
-              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Unable to Load Hotel Search</h3>
-              <p class="text-gray-600 mb-4">We're having trouble loading the hotel search widget.</p>
-              <button @click="loadWidget('hotels')"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Retry
-              </button>
-            </div>
-          </div>
-
-          <!-- Widget Container -->
-          <div id="travelpayouts-widget" class="relative z-0"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Car Rental Search Section -->
-  <div v-else-if="activeCategory === 'Car Rentals'" class="car-rental-search-section">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
-          <div class="absolute top-0 right-0 opacity-20">
-            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L4 12l8 10 8-10-8-10z" />
-            </svg>
-          </div>
-          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-            <span class="block">Find Your Perfect Rental Car</span>
-          </h2>
-          <p class="mt-3 max-w-2xl text-lg text-blue-100">
-            Compare prices across hundreds of car rental companies
-          </p>
-        </div>
-
-        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
-          <form @submit.prevent="searchCarRentals" class="mt-8 space-y-6">
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <!-- Pickup Location Input -->
-              <div class="relative">
-                <label for="pickupLocation"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Pickup Location
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-map-marker-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="pickupLocation" id="pickupLocation" type="text" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="City or Airport" />
-                </div>
-              </div>
-
-              <!-- Dropoff Location Input -->
-              <div class="relative">
-                <label for="dropoffLocation"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Dropoff Location
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-map-marker-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="dropoffLocation" id="dropoffLocation" type="text"
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="Same as pickup (optional)" />
-                </div>
-              </div>
-
-              <!-- Pickup Date -->
-              <div class="relative">
-                <label for="pickupDate"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Pickup Date
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="far fa-calendar-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="pickupDate" id="pickupDate" type="date" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
-                </div>
-              </div>
-
-              <!-- Dropoff Date -->
-              <div class="relative">
-                <label for="dropoffDate"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Dropoff Date
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="far fa-calendar-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="dropoffDate" id="dropoffDate" type="date" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg appearance-none" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Search Button -->
-            <div class="pt-2 flex justify-center">
-              <button type="submit"
-                class="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
-                <i class="fas fa-car mr-2"></i>
-                Search Rental Cars
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Attractions Search Section -->
-  <div v-else-if="activeCategory === 'Attractions'" class="attractions-search-section">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
-        <div class="relative pt-8 px-6 sm:pt-12 sm:px-8">
-          <div class="absolute top-0 right-0 opacity-20">
-            <svg class="h-32 w-32 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L4 12l8 10 8-10-8-10z" />
-            </svg>
-          </div>
-          <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-            <span class="block">Discover Amazing Attractions</span>
-          </h2>
-          <p class="mt-3 max-w-2xl text-lg text-blue-100">
-            Find the best tours, activities and experiences for your trip
-          </p>
-        </div>
-
-        <div class="px-6 pb-8 sm:px-8 sm:pb-10">
-          <form @submit.prevent="searchAttractions" class="mt-8 space-y-6">
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <!-- Location Input -->
-              <div class="relative col-span-2">
-                <label for="attractionsLocation"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Destination (Country/City)
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-map-marker-alt text-blue-300"></i>
-                  </div>
-                  <input v-model="attractionsLocation" id="attractionsLocation" type="text" required
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="Enter country or city (e.g., Kenya)" />
-                </div>
-              </div>
-
-              <!-- Activity Search Input -->
-              <div class="relative col-span-2">
-                <label for="attractionsSearchTerm"
-                  class="absolute -top-2 left-4 bg-blue-600 px-2 text-xs font-medium text-blue-100 rounded-full">
-                  Activity or Attraction
-                </label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-blue-300"></i>
-                  </div>
-                  <input v-model="attractionsSearchTerm" id="attractionsSearchTerm" type="text"
-                    class="block w-full pl-10 pr-3 py-3 border border-blue-500 bg-blue-500/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent rounded-lg"
-                    placeholder="Search for specific activities (e.g., Maasai Mara)" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Search Button -->
-            <div class="pt-2 flex justify-center">
-              <button type="submit"
-                class="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-blue-800 font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-blue-700 flex items-center justify-center">
-                <i class="fas fa-binoculars mr-2"></i>
-                Find Attractions
-              </button>
-            </div>
-
-            <!-- Popular Searches -->
-            <div class="pt-4">
-              <p class="text-sm text-blue-200 text-center mb-2">Popular searches:</p>
-              <div class="flex flex-wrap justify-center gap-2">
-                <button type="button" @click="setPopularSearch('Kenya', 'Maasai Mara')"
-                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
-                  Maasai Mara, Kenya
-                </button>
-                <button type="button" @click="setPopularSearch('France', 'Eiffel Tower')"
-                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
-                  Eiffel Tower, France
-                </button>
-                <button type="button" @click="setPopularSearch('USA', 'Grand Canyon')"
-                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
-                  Grand Canyon, USA
-                </button>
-                <button type="button" @click="setPopularSearch('Egypt', 'Pyramids')"
-                  class="px-3 py-1 text-xs bg-blue-500/30 hover:bg-blue-500/50 text-white rounded-full border border-blue-400 transition-colors">
-                  Pyramids, Egypt
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Normal Services Search Section -->
-  <div v-else class="services-search-section">
+  <div class="services-search-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="px-6 py-8 sm:p-10">

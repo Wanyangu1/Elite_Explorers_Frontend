@@ -22,7 +22,7 @@ export function useBooking() {
   // Compute full image path
   const serviceImage = computed(() => {
     return bookingDetails.value.image
-      ? `http://localhost:8000/media/${bookingDetails.value.image}`
+      ? `https://backend.miteexplorers.com/media/${bookingDetails.value.image}`
       : '/default-service.jpg'
   })
 

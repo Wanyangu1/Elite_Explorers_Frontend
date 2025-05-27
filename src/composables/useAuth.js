@@ -1,5 +1,4 @@
-// useAuth.js
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import axiosInstance from '@/axiosconfig/axiosInstance'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
@@ -9,14 +8,39 @@ export default function useAuth() {
   const email = ref('')
   const password = ref('')
   const router = useRouter()
-  const errorMessage = ref('') // 💡 New ref to hold errors
+  const errorMessage = ref('')
   const authError = ref('')
 
   const accessToken = useLocalStorage('access-token', null)
   const refreshToken = useLocalStorage('refresh-token', null)
 
+  // ✅ Check if the access token is expired
+  const isTokenExpired = (token) => {
+    if (!token) return true
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return payload.exp * 1000 < Date.now()
+    } catch (e) {
+      console.warn('Invalid token or decoding error:', e)
+      return true // token is malformed or invalid
+    }
+  }
+
+  // ✅ Automatically clear expired token on load
+  watchEffect(() => {
+    if (accessToken.value && isTokenExpired(accessToken.value)) {
+      console.warn('Access token expired, clearing storage...')
+      accessToken.value = null
+      refreshToken.value = null
+      delete axiosInstance.defaults.headers.common['Authorization']
+      router.push('/login')
+    } else if (accessToken.value) {
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken.value}`
+    }
+  })
+
   const login = async () => {
-    errorMessage.value = '' // Clear previous errors
+    errorMessage.value = ''
     try {
       const response = await axiosInstance.post('/api/login/', {
         email: email.value,
@@ -27,21 +51,16 @@ export default function useAuth() {
       refreshToken.value = response.data.refresh_token
 
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken.value}`
-
       router.push('/')
     } catch (error) {
       console.error(error)
-      if (error.response) {
-        errorMessage.value =
-          error.response.data.detail || 'Login failed. Please check your credentials.'
-      } else {
-        errorMessage.value = 'Something went wrong. Please try again.'
-      }
+      errorMessage.value =
+        error.response?.data?.detail || 'Login failed. Please check your credentials.'
     }
   }
 
   const signup = async () => {
-    authError.value = '' // Reset error
+    authError.value = ''
     try {
       const response = await axiosInstance.post('/api/register/', {
         name: name.value,
@@ -70,12 +89,12 @@ export default function useAuth() {
       accessToken.value = null
       refreshToken.value = null
       delete axiosInstance.defaults.headers.common['Authorization']
-
       router.push('/login')
     } catch (error) {
       console.error(error)
     }
   }
+
   return {
     name,
     email,
@@ -85,6 +104,7 @@ export default function useAuth() {
     logout,
     accessToken,
     refreshToken,
-    authError, // Include this
+    authError,
+    errorMessage,
   }
 }

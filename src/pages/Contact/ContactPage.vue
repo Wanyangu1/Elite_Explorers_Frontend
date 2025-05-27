@@ -1,3 +1,71 @@
+<script setup>
+import { ref } from 'vue';
+import TheNavbar from '@/components/TheNavbar.vue';
+import TheFooter from '@/components/TheFooter.vue';
+
+const form = ref({
+  name: '',
+  phone: '',
+  email: '',
+  service: '',
+  details: ''
+});
+
+const showSuccessModal = ref(false);
+const isSubmitting = ref(false);
+
+const testimonials = [
+  {
+    name: 'Sarah Johnson',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
+    quote: 'The booking agent saved me hours of research and got me a better deal than I could find online!',
+    rating: 5
+  },
+  {
+    name: 'Michael Chen',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
+    quote: 'I had complex multi-city flights and hotels to book. Their agent made it all seamless.',
+    rating: 5
+  },
+  {
+    name: 'Amina Diallo',
+    image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
+    quote: 'The personalized attention was amazing. They remembered all my preferences from previous trips.',
+    rating: 4
+  }
+];
+
+const submitToWhatsApp = () => {
+  isSubmitting.value = true;
+
+  // Simulate processing delay
+  setTimeout(() => {
+    const phoneNumber = '+16234992271';
+    const message = `*New Booking Assistance Request*\n\n` +
+      `*Name:* ${form.value.name}\n` +
+      `*Phone:* ${form.value.phone}\n` +
+      `*Email:* ${form.value.email || 'Not provided'}\n` +
+      `*Service Needed:* ${form.value.service}\n\n` +
+      `*Booking Details:*\n${form.value.details}\n\n` +
+      `Please contact this client to assist with their booking.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+    showSuccessModal.value = true;
+    isSubmitting.value = false;
+
+    form.value = {
+      name: '',
+      phone: '',
+      email: '',
+      service: '',
+      details: ''
+    };
+  }, 1500);
+};
+</script>
 <template>
   <div class="min-h-screen bg-gradient-to-b from-blue-50/30 via-white to-indigo-50/30">
     <TheNavbar />
@@ -145,7 +213,7 @@
                       </div>
                       <input v-model="form.phone" type="tel" id="phone" required
                         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
-                        placeholder="254 731 727 411">
+                        placeholder="+1 (623) 499-2271">
                     </div>
                   </div>
                 </div>
@@ -365,75 +433,6 @@
     <TheFooter />
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import TheNavbar from '@/components/TheNavbar.vue';
-import TheFooter from '@/components/TheFooter.vue';
-
-const form = ref({
-  name: '',
-  phone: '',
-  email: '',
-  service: '',
-  details: ''
-});
-
-const showSuccessModal = ref(false);
-const isSubmitting = ref(false);
-
-const testimonials = [
-  {
-    name: 'Sarah Johnson',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
-    quote: 'The booking agent saved me hours of research and got me a better deal than I could find online!',
-    rating: 5
-  },
-  {
-    name: 'Michael Chen',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
-    quote: 'I had complex multi-city flights and hotels to book. Their agent made it all seamless.',
-    rating: 5
-  },
-  {
-    name: 'Amina Diallo',
-    image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
-    quote: 'The personalized attention was amazing. They remembered all my preferences from previous trips.',
-    rating: 4
-  }
-];
-
-const submitToWhatsApp = () => {
-  isSubmitting.value = true;
-
-  // Simulate processing delay
-  setTimeout(() => {
-    const phoneNumber = '+16234992271';
-    const message = `*New Booking Assistance Request*\n\n` +
-      `*Name:* ${form.value.name}\n` +
-      `*Phone:* ${form.value.phone}\n` +
-      `*Email:* ${form.value.email || 'Not provided'}\n` +
-      `*Service Needed:* ${form.value.service}\n\n` +
-      `*Booking Details:*\n${form.value.details}\n\n` +
-      `Please contact this client to assist with their booking.`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-
-    window.open(whatsappUrl, '_blank');
-    showSuccessModal.value = true;
-    isSubmitting.value = false;
-
-    form.value = {
-      name: '',
-      phone: '',
-      email: '',
-      service: '',
-      details: ''
-    };
-  }, 1500);
-};
-</script>
 
 <style>
 .animate-scale-in {
